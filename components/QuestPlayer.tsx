@@ -10,6 +10,7 @@ import { EasyWin, GamePlayer, MistakeRound, sliceGame } from "@/components/games
 import { warmupFor } from "@/lib/warmup";
 import type { Result } from "@/components/games/common";
 import MuteToggle from "@/components/MuteToggle";
+import MusicToggle from "@/components/MusicToggle";
 import { ARCS, CARDS, QUESTS, STARS_PER_CARD, type Quest } from "@/content/quests";
 import { SKILLS } from "@/content/skills";
 import { narrate, preload, readMs, say, sfx, sleep, stop } from "@/lib/audio";
@@ -116,6 +117,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
   }, [step, quest.power.name]);
   useEffect(() => { preload(quest.story[0].t); return () => stop(); }, [quest.story]);
   useEffect(() => { if (typeof window !== "undefined") window.scrollTo({ top: 0 }); }, [step, panel, lstep]);
+  useEffect(() => { if (step === "story" && panel > 0) sfx.swish(); }, [step, panel]);
 
   const autoMs = (text: string, extra = 0) => readMs(text) + extra + GAP;
   const skip = () => {
@@ -172,7 +174,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
     <main className="wrap">
       <div className="row spread" style={{ marginBottom: 8 }}>
         <Link href="/" className="pill" style={{ textDecoration: "none" }}>← Map</Link>
-        <div className="row" style={{ gap: 6 }}><MuteToggle /><span className="pill">Game {quest.day}</span></div>
+        <div className="row" style={{ gap: 6 }}><MusicToggle /><MuteToggle compact /><span className="pill">Game {quest.day}</span></div>
       </div>
       {step !== "intro" && <StageBar step={step} has={has} />}
 
@@ -360,7 +362,7 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
       </div>
       <div className="row" style={{ justifyContent: "center", gap: 4, margin: "12px 0" }}>
         {Array.from({ length: reward.stars }, (_, k) => (
-          <div key={k} className="pop" style={{ animationDelay: `${0.4 + k * 0.2}s`, animationFillMode: "both" }}><ItemArt item="star" size={50} /></div>
+          <div key={k} className="pop" onAnimationStart={() => sfx.star()} style={{ animationDelay: `${0.4 + k * 0.2}s`, animationFillMode: "both" }}><ItemArt item="star" size={50} /></div>
         ))}
       </div>
       <p className="panel-text" style={{ margin: 0 }}>+{reward.stars} stars{reward.total >= 0 ? ` · ${reward.total} in your jar` : ""}</p>

@@ -104,7 +104,8 @@ function FlashGame({ item, layout, rounds, onDone }: { item: Item; layout: "scat
   const n = rounds[i];
   const go = () => {
     setPhase("show");
-    setTimeout(() => { setPhase("ask"); say(P.howManySaw); }, 2000);
+    sfx.whoosh();
+    setTimeout(() => { setPhase("ask"); sfx.pop(); say(P.howManySaw); }, 2000);
   };
   return (
     <div className="fade-in" key={i}>
@@ -142,7 +143,7 @@ function GiveNGame({ item, rounds, onDone, guided }: { item: Item; rounds: numbe
       <p className="big center">&quot;I want <span style={{ color: "#f28c28" }}>{n}</span> modaks, please!&quot;</p>
       <div className="stage" style={{ minHeight: 0, padding: 10, gap: 4 }}>
         {Array.from({ length: pile }, (_, k) => (
-          <button key={k} onClick={() => { if (state !== "right") { sfx.tap(); setPlate(plate + 1); } }} style={{ border: 0, background: "none", padding: 0, cursor: "pointer" }}>
+          <button key={k} onClick={() => { if (state !== "right") { sfx.drop(); setPlate(plate + 1); } }} style={{ border: 0, background: "none", padding: 0, cursor: "pointer" }}>
             <ItemArt item={item} size={40} />
           </button>
         ))}
@@ -150,7 +151,7 @@ function GiveNGame({ item, rounds, onDone, guided }: { item: Item; rounds: numbe
       <p className="center muted" style={{ margin: "6px 0 4px", fontWeight: 700, fontSize: 14 }}>{guided ? <>On the plate: <b style={{ color: "#f28c28", fontSize: 18 }}>{plate}</b> - stop at {n}!</> : "Plate (tap to put back)"}</p>
       <div className="stage" style={{ minHeight: 76, padding: 8, gap: 4, borderRadius: 999, background: "#fdf2e2", borderColor: state === "right" ? "#2e9d5b" : state === "wrong" ? "#d64545" : undefined }}>
         {Array.from({ length: plate }, (_, k) => (
-          <button key={k} onClick={() => state !== "right" && setPlate(plate - 1)} style={{ border: 0, background: "none", padding: 0, cursor: "pointer" }}>
+          <button key={k} onClick={() => { if (state !== "right") { sfx.pop(); setPlate(plate - 1); } }} style={{ border: 0, background: "none", padding: 0, cursor: "pointer" }}>
             <ItemArt item={item} size={40} />
           </button>
         ))}
@@ -211,7 +212,7 @@ function ConserveGame({ item, rounds, onDone }: { item: Item; rounds: number[]; 
       </div>
       {phase === "row" && (
         <div className="center" style={{ marginTop: 14 }}>
-          <button className="btn" onClick={() => { setPhase("shake"); say(P.shakeWeb); setTimeout(() => setPhase("ask"), 1200); }}>Shake the web!</button>
+          <button className="btn" onClick={() => { setPhase("shake"); sfx.whoosh(); say(P.shakeWeb); setTimeout(() => setPhase("ask"), 1200); }}>Shake the web!</button>
         </div>
       )}
       {phase === "ask" && <NumberChoices key={i} answer={n} seed={i + 9} onAnswer={next} explain={<ConserveDemo item={item} n={n} k={i} />} />}

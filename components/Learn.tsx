@@ -4,13 +4,14 @@ import { ItemArt, ShapeArt } from "@/components/Art";
 import { SceneView } from "@/components/Scene";
 import type { Demo, Item } from "@/content/quests";
 import { ENGLISH, HINDI, HINDI_DEV } from "@/content/skills";
+import { sfx } from "@/lib/audio";
 
 // Ticks from 0 upward every `ms`, restarting whenever `key` changes.
 function useTicker(max: number, ms: number, key: unknown) {
   const [t, setT] = useState(0);
   useEffect(() => {
     setT(0);
-    const id = setInterval(() => setT((x) => (x >= max ? x : x + 1)), ms);
+    const id = setInterval(() => setT((x) => { if (x >= max) return x; sfx.pop(); return x + 1; }), ms);
     return () => clearInterval(id);
   }, [max, ms, key]);
   return t;

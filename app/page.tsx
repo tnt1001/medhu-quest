@@ -7,6 +7,8 @@ import { Avatar } from "@/components/Avatars";
 import { SceneView } from "@/components/Scene";
 import LockModal from "@/components/LockModal";
 import MuteToggle from "@/components/MuteToggle";
+import MusicToggle from "@/components/MusicToggle";
+import { sfx } from "@/lib/audio";
 import { ARCS, QUESTS, STARS_PER_CARD, type Quest } from "@/content/quests";
 
 function Thumb({ q, h = 112 }: { q: Quest; h?: number }) {
@@ -50,6 +52,7 @@ export default function Home() {
           </div>
         </div>
         <div className="row" style={{ gap: 6 }}>
+          <MusicToggle />
           <MuteToggle compact />
           <Link href="/cards" className="pill row" style={{ gap: 4, textDecoration: "none", fontSize: 16, padding: "4px 10px" }}>
             <ItemArt item="star" size={22} /><b>{stars}</b>
@@ -110,7 +113,7 @@ export default function Home() {
           return open ? (
             <Link key={q.day} href={`/quest/${q.day}`} className={`tile ${current ? "tile-current" : ""}`} style={{ textDecoration: "none" }}>{body}</Link>
           ) : (
-            <button key={q.day} className="tile tile-locked" onClick={() => setLocked(q)}>{body}</button>
+            <button key={q.day} className="tile tile-locked" onClick={() => { sfx.locked(); setLocked(q); }}>{body}</button>
           );
         })}
       </div>
