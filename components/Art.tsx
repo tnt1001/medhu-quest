@@ -1,3 +1,4 @@
+import { MooshakArt } from "@/components/Cast";
 import type { Item, ShapeName } from "@/content/quests";
 
 export function ItemArt({ item, size = 48, color }: { item: Item; size?: number; color?: string }) {
@@ -45,18 +46,7 @@ export function ShapeArt({ shape, size = 64, color = "#2f6fd6" }: { shape: Shape
 }
 
 export function Mooshak({ size = 64, mood = "happy" }: { size?: number; mood?: "happy" | "confused" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-label="Mooshak the mouse">
-      <circle cx="16" cy="18" r="11" fill="#a1887f" /><circle cx="16" cy="18" r="6" fill="#f8bbd0" />
-      <circle cx="48" cy="18" r="11" fill="#a1887f" /><circle cx="48" cy="18" r="6" fill="#f8bbd0" />
-      <ellipse cx="32" cy="36" rx="20" ry="18" fill="#bcaaa4" />
-      <circle cx="25" cy="33" r="3" fill="#2b2118" /><circle cx="39" cy="33" r="3" fill="#2b2118" />
-      <circle cx="32" cy="42" r="3.5" fill="#e57373" />
-      {mood === "happy" ? <path d="M26 47 Q32 52 38 47" stroke="#2b2118" strokeWidth="2" fill="none" /> : <path d="M26 49 Q29 46 32 49 Q35 52 38 49" stroke="#2b2118" strokeWidth="2" fill="none" />}
-      <path d="M12 40 L4 38 M12 43 L4 44 M52 40 L60 38 M52 43 L60 44" stroke="#6d4c41" strokeWidth="1.5" />
-      <path d="M22 14 Q32 4 42 14" stroke="#f28c28" strokeWidth="3" fill="none" />
-    </svg>
-  );
+  return <MooshakArt size={size} mood={mood} />;
 }
 
 export function Badge({ name, color, size = 40 }: { name: string; color: string; size?: number }) {

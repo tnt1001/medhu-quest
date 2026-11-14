@@ -67,10 +67,10 @@ function CountGame({ item, rounds, onDone }: { item: Item; rounds: number[]; onD
 /* Flash! Show for 2 seconds, then hide and ask. */
 function FivesFrame({ n, item }: { n: number; item: Item }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 56px)", gap: 6, padding: 8, background: "#f6e3c4", borderRadius: 14 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, min(56px, 14vw))", gap: 6, padding: 8, background: "#f6e3c4", borderRadius: 14 }}>
       {Array.from({ length: 5 }, (_, k) => (
-        <div key={k} style={{ width: 56, height: 56, borderRadius: 10, background: "white", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {k < n && <ItemArt item={item} size={44} />}
+        <div key={k} style={{ width: "min(56px, 14vw)", height: "min(56px, 14vw)", borderRadius: 10, background: "white", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {k < n && <ItemArt item={item} size={36} />}
         </div>
       ))}
     </div>

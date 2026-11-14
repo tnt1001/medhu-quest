@@ -27,6 +27,8 @@ export const P = {
   easyOne: "One last easy one!",
   questDone: "Quest complete! Shabaash, Medhu!",
   phoneDown: "Phone down! Time for a real-world game with Papa.",
+  learnIntro: "Let's learn the trick!",
+  newPower: (name: string) => `You got a new power: ${name}!`,
 };
 
 const COLORS = ["red", "blue", "yellow", "green"];
@@ -37,7 +39,8 @@ export function allPhrases(): { text: string; voice: Voice }[] {
   const add = (text: string, voice: Voice = "narrator") => out.push({ text, voice });
   for (const q of QUESTS) {
     add(q.title);
-    q.story.forEach((s) => add(s));
+    q.story.forEach((s) => add(s.t));
+    q.learn.forEach((l) => add(l.t));
     add(q.teaser);
   }
   for (let n = 0; n <= 20; n++) add(P.number(n));
@@ -45,6 +48,8 @@ export function allPhrases(): { text: string; voice: Voice }[] {
   COLORS.forEach((c) => add(P.colorWell(c)));
   SHAPES.forEach((s) => add(P.findShapes(s)));
   [P.tooMany, P.notEnough, P.tapToCount, P.howManyModaks, P.howManySaw, P.whichMore, P.countAgain, P.whatNext, P.foundAll, P.shakeWeb, P.easyOne, P.questDone, P.phoneDown].forEach((t) => add(t));
+  add(P.learnIntro);
+  for (const q of QUESTS) add(P.newPower(q.power.name));
   add(P.mooshakHmm, "mooshak");
   add(P.mooshakThanks, "mooshak");
   return out;
