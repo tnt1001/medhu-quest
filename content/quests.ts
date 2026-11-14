@@ -51,6 +51,7 @@ export interface Quest {
   power: { name: string; desc: string };
   story: Panel[];
   learn: LearnStep[];
+  talk?: string;
   game: Game;
   gameName: string;
   physical?: { title: string; steps: string[] };
@@ -158,6 +159,7 @@ export const QUESTS: Quest[] = [
       { t: "Here is the trick: the last number tells you HOW MANY. So there are 4 modaks. No need to count again!", demo: { type: "count", item: "modak", n: 4 } },
       { t: "Let's try with more. Count with me... the last number is 6. So there are 6 modaks!", demo: { type: "count", item: "modak", n: 6 } },
     ],
+    talk: "Ask Medhu to count Papa's fingers on one hand, then ask \"So how many?\" - he should say 5 without counting again.",
     gameName: "Count and Tell",
     game: { type: "count", item: "modak", rounds: [3, 5, 4, 6, 7] },
     physical: { title: "Modak count", steps: ["Put 4-7 small objects in a row.", "He counts by touching each one.", "Ask \"So how many?\" - he should answer without counting again."] },
@@ -180,6 +182,7 @@ export const QUESTS: Quest[] = [
       { t: "Three modaks often make a triangle shape. Look... 3! Teen!", demo: { type: "glance", item: "modak", n: 3 } },
       { t: "That is super eyes: look once, and say the number. No touching, no counting. Let's play Flash!", demo: { type: "glance", item: "modak", n: 2 } },
     ],
+    talk: "Hold up 1, 2 or 3 fingers for a second and hide them. Medhu calls out the number!",
     gameName: "Flash!",
     game: { type: "flash", item: "modak", layout: "scatter", rounds: [2, 1, 3, 2, 3, 1] },
     mistake: { item: "modak", shown: 3, claim: 2 },
@@ -202,6 +205,7 @@ export const QUESTS: Quest[] = [
       { t: "When you say 4 - STOP! That's the number they asked for. Exactly 4 on the plate.", demo: { type: "giveN", item: "modak", n: 4, pile: 8 } },
       { t: "Let's watch once more with 6. Move, count, and STOP at 6.", demo: { type: "giveN", item: "modak", n: 6, pile: 9 } },
     ],
+    talk: "Ask Medhu: \"Give me exactly 3 spoons.\" Did he stop at 3?",
     gameName: "Modak Shop",
     game: { type: "giveN", item: "modak", rounds: [3, 5, 4, 6, 8] },
     physical: { title: "Real modak shop", steps: ["Make a pile of 15 small objects.", "Be the customer: \"I want 6 please!\"", "Check: did he stop at 6? Try 4, 7, 8."] },
@@ -223,6 +227,7 @@ export const QUESTS: Quest[] = [
       { t: "Five is like 4 with one in the middle. 5! Paanch! Like the 5 on a dice.", demo: { type: "dice", n: 5 } },
       { t: "Five is also all the fingers on one hand. Show me your hand - that's 5!", demo: { type: "number", n: 5 } },
     ],
+    talk: "Show 4 or 5 fingers quickly. Ask: \"How did you know so fast?\"",
     gameName: "Flash!",
     game: { type: "flash", item: "modak", layout: "scatter", rounds: [4, 3, 5, 4, 5, 2] },
     mistake: { item: "modak", shown: 5, claim: 4 },
@@ -244,6 +249,7 @@ export const QUESTS: Quest[] = [
       { t: "Here 3 are full and 2 are empty. Look at the full ones: 3!", demo: { type: "frame5", n: 3 } },
       { t: "Remember: full tray means 5. Look at the empty spaces to help you!", demo: { type: "frame5", n: 5 } },
     ],
+    talk: "Show 5 fingers - a full hand is like a full tray! Fold one down: how many now?",
     gameName: "Tray Flash",
     game: { type: "flash", item: "modak", layout: "frame5", rounds: [5, 3, 4, 5, 2, 5] },
     physical: { title: "Egg tray fill", steps: ["Cut an egg tray to 5 cups.", "Fill it with modaks or balls - \"full tray is 5!\"", "Fill 3 or 4: \"how many? how many empty?\""] },
@@ -267,6 +273,7 @@ export const QUESTS: Quest[] = [
       { t: "So they are STILL 5! Moving them around does not change how many there are.", demo: { type: "number", n: 5 } },
       { t: "Only adding or taking away changes the number. Spreading out does not!", demo: { type: "conserve", item: "modak", n: 4 } },
     ],
+    talk: "Line up 5 toys, count them, then spread them out. Ask Medhu: \"Still 5? How do you know?\"",
     gameName: "Wobbly Web",
     game: { type: "conserve", item: "modak", rounds: [4, 6, 5, 7] },
     physical: { title: "Spread them out", steps: ["Count 6 objects in a line together.", "Spread them far apart while he watches.", "\"How many now?\" - does he know it's still 6 without counting?"] },
@@ -289,6 +296,7 @@ export const QUESTS: Quest[] = [
       { t: "The row with extra modaks has MORE. The bottom row has more!", demo: { type: "match", item: "modak", a: 4, b: 6 } },
       { t: "You can also count both: 4 and 6. 6 comes after 4 when we count, so 6 is more.", demo: { type: "number", n: 6 } },
     ],
+    talk: "Put 3 grapes in front of Papa and 5 in front of Medhu. Who has more? How do you know?",
     gameName: "More or Less",
     game: { type: "compare", item: "modak", rounds: [[3, 5], [6, 4], [2, 7], [5, 6], [8, 7]] },
     physical: { title: "Two plates", steps: ["Put 5 on one plate and 7 on another.", "\"Which has more? How do you know?\"", "Spread the 5 out wide - does he get tricked?"] },
@@ -310,6 +318,7 @@ export const QUESTS: Quest[] = [
       { t: "4 is the four corners. 5 is four corners plus one in the middle.", demo: { type: "dice", n: 5 } },
       { t: "6 is two lines of 3, like two rows of soldiers. Learn the pictures and you'll never need to count!", demo: { type: "dice", n: 6 } },
     ],
+    talk: "Roll a real dice 3 times. Medhu says the number without counting the dots.",
     gameName: "Dice Flash",
     game: { type: "flash", item: "modak", layout: "dice", rounds: [3, 5, 4, 6, 2, 5] },
     physical: { title: "Real dice", steps: ["Roll a real dice together.", "He says the number without counting dots.", "Show the same number on fingers."] },
@@ -330,6 +339,7 @@ export const QUESTS: Quest[] = [
       { t: "Find the part that repeats. Here it is \"red, blue\". Then it starts again.", demo: { type: "pattern", seq: ["red", "blue", "red", "blue", "red", "blue"] } },
       { t: "Some patterns are longer: blue, blue, red. Blue, blue, red. Say it like a song!", demo: { type: "pattern", seq: ["blue", "blue", "red", "blue", "blue", "red"] } },
     ],
+    talk: "Clap-stamp, clap-stamp... what comes next? Make a pattern with your body!",
     gameName: "Pattern Garland",
     game: { type: "pattern", rounds: [["red", "blue", "red", "blue", "red"], ["yellow", "green", "yellow", "green"], ["blue", "blue", "red", "blue", "blue"], ["red", "yellow", "red", "yellow", "red", "yellow"]] },
     physical: { title: "Bead or block pattern", steps: ["Make a red-blue-red-blue row with blocks.", "\"What comes next?\"", "Let him make his own pattern for you to continue."] },
@@ -350,6 +360,7 @@ export const QUESTS: Quest[] = [
       { t: "A square has 4 sides, all the same size, and 4 corners.", demo: { type: "shape", shape: "square" } },
       { t: "A rectangle also has 4 sides and 4 corners, but it is longer - like a door.", demo: { type: "shape", shape: "rectangle" } },
     ],
+    talk: "Find one circle and one rectangle in this room together.",
     gameName: "Shape Quest",
     game: { type: "shapes", rounds: ["circle", "triangle", "square", "rectangle"] },
     physical: { title: "Shape hunt", steps: ["Walk around the house together.", "Find 2 circles, 2 rectangles, 1 triangle.", "Name each one and count its corners."] },
@@ -371,6 +382,7 @@ export const QUESTS: Quest[] = [
       { t: "Exactly Power: move one at a time, and stop at the number.", demo: { type: "giveN", item: "modak", n: 5, pile: 8 } },
       { t: "Tray of Five: a full tray is always 5.", demo: { type: "frame5", n: 5 } },
     ],
+    talk: "Ask Medhu which power was his favourite, and why.",
     gameName: "Feast Challenge",
     game: {
       type: "mixed",

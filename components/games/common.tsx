@@ -35,7 +35,8 @@ export function optionsFor(answer: number, seed: number, max = 20): number[] {
 }
 
 // A row of number choices. Calls onAnswer(firstTryRight, recovered) once the right number is tapped.
-export function NumberChoices({ answer, seed, onAnswer }: { answer: number; seed: number; onAnswer: (firstTry: boolean, recovered: boolean) => void }) {
+// After a wrong tap it shows `explain` - a worked explanation, not just "wrong".
+export function NumberChoices({ answer, seed, onAnswer, explain }: { answer: number; seed: number; onAnswer: (firstTry: boolean, recovered: boolean) => void; explain?: React.ReactNode }) {
   const opts = useMemo(() => optionsFor(answer, seed), [answer, seed]);
   const [wrong, setWrong] = useState<number[]>([]);
   const [done, setDone] = useState(false);
@@ -52,7 +53,7 @@ export function NumberChoices({ answer, seed, onAnswer }: { answer: number; seed
                 setDone(true);
                 sfx.right();
                 setTimeout(() => sayNumber(n), 250);
-                setTimeout(() => onAnswer(wrong.length === 0, wrong.length > 0), 1100);
+                setTimeout(() => onAnswer(wrong.length === 0, wrong.length > 0), 1300);
               } else {
                 sfx.wrong();
                 setWrong((w) => [...w, n]);
@@ -64,6 +65,12 @@ export function NumberChoices({ answer, seed, onAnswer }: { answer: number; seed
         ))}
       </div>
       {done && <div className="numword center pop">{numberWords(answer)}</div>}
+      {!done && wrong.length > 0 && explain && (
+        <div className="explain fade-in">
+          <div className="explain-title">Let&apos;s check together</div>
+          {explain}
+        </div>
+      )}
     </div>
   );
 }
@@ -101,9 +108,9 @@ export function Scattered({ n, item, seed, size = 52 }: { n: number; item: Item;
 
 export function Progress({ total, at }: { total: number; at: number }) {
   return (
-    <div className="progress">
+    <div className="modakbar" aria-label={`${at} of ${total}`}>
       {Array.from({ length: total }, (_, i) => (
-        <span key={i} className={i < at ? "on" : ""} />
+        <span key={i} className={i < at ? "on" : ""}><ItemArt item="modak" size={22} /></span>
       ))}
     </div>
   );

@@ -5,39 +5,60 @@ import { Badge, ItemArt } from "@/components/Art";
 import { CardPortrait, MooshakArt } from "@/components/Cast";
 import { SceneView } from "@/components/Scene";
 import { DemoView } from "@/components/Learn";
-import { EasyWin, GamePlayer, MistakeRound } from "@/components/games/Games";
+import { EasyWin, GamePlayer, MistakeRound, sliceGame } from "@/components/games/Games";
+import { warmupFor } from "@/lib/warmup";
 import type { Result } from "@/components/games/common";
 import MuteToggle from "@/components/MuteToggle";
 import { ARCS, CARDS, QUESTS, STARS_PER_CARD, type Quest } from "@/content/quests";
 import { SKILLS } from "@/content/skills";
-import { preload, say, sfx, stop } from "@/lib/audio";
+import { narrate, preload, readMs, say, sfx, sleep, stop } from "@/lib/audio";
+import type { Demo } from "@/content/quests";
 import { P } from "@/lib/phrases";
 
-type Step = "intro" | "story" | "learn" | "game" | "physical" | "mistake" | "easy" | "reward";
+type Step = "intro" | "warmup" | "story" | "learn" | "guided" | "game" | "physical" | "mistake" | "easy" | "reward";
 
 const cardColor = (name: string) => CARDS.find((c) => c.name === name)?.color ?? "#8d6e63";
 
 const STAGES: { key: string; label: string; steps: Step[] }[] = [
+  { key: "warm", label: "Warm-up", steps: ["warmup"] },
   { key: "story", label: "Story", steps: ["intro", "story"] },
   { key: "learn", label: "Learn", steps: ["learn"] },
+  { key: "try", label: "Try", steps: ["guided"] },
   { key: "play", label: "Play", steps: ["game", "physical", "mistake", "easy"] },
   { key: "win", label: "Win", steps: ["reward"] },
 ];
 
-function StageBar({ step, hasLearn }: { step: Step; hasLearn: boolean }) {
-  const stages = STAGES.filter((s) => hasLearn || s.key !== "learn");
+function StageBar({ step, has }: { step: Step; has: Record<string, boolean> }) {
+  const stages = STAGES.filter((s) => has[s.key] !== false);
   const at = stages.findIndex((s) => s.steps.includes(step));
   return (
     <div className="stagebar">
       {stages.map((s, i) => (
         <div key={s.key} className={`stg ${i < at ? "done" : i === at ? "on" : ""}`}>
           <span className="dot">{i < at ? "✓" : i + 1}</span>
-          <span>{s.label}</span>
+          {i === at && <span>{s.label}</span>}
         </div>
       ))}
     </div>
   );
 }
+
+// How long each concept animation needs before moving on.
+function demoMs(d: Demo) {
+  switch (d.type) {
+    case "count": return d.n * 850 + 1200;
+    case "giveN": return (d.n + 1) * 900 + 900;
+    case "glance": return 2600;
+    case "frame5": return 2400;
+    case "conserve": return 3400;
+    case "match": return (Math.min(d.a, d.b) + 1) * 700 + 1000;
+    case "pattern": return d.seq.length * 450 + 900;
+    case "shape": return 3200;
+    default: return 1500;
+  }
+}
+
+const GAP = 1500;
 
 export default function QuestPlayer({ quest }: { quest: Quest }) {
   const [step, setStep] = useState<Step>("intro");
@@ -50,22 +71,56 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
   const skill = SKILLS.find((s) => s.id === quest.skill);
   const hasLearn = quest.learn.length > 0;
 
+  const warm = warmupFor(quest.review);
+  const guidedGame = hasLearn ? sliceGame(quest.game, 0, 1) : null;
+  const mainGame = (guidedGame && quest.game.type !== "mixed" ? sliceGame(quest.game, 1) : quest.game) ?? quest.game;
+  const has = { warm: !!warm, learn: hasLearn, try: !!guidedGame };
+  const [auto, setAuto] = useState(true);
+  const [tick, setTick] = useState(0);
+
+  // Story and Learn play themselves: narrate, let the picture finish, wait 1.5s, move on.
   useEffect(() => {
-    if (step !== "story") return;
-    say(quest.story[panel].t);
-    if (quest.story[panel + 1]) preload(quest.story[panel + 1].t);
-  }, [step, panel, quest.story]);
-  useEffect(() => {
-    if (step !== "learn") return;
-    say(quest.learn[lstep].t);
-    if (quest.learn[lstep + 1]) preload(quest.learn[lstep + 1].t);
-  }, [step, lstep, quest.learn]);
+    if (step !== "story" && step !== "learn") return;
+    let cancelled = false;
+    const text = step === "story" ? quest.story[panel].t : quest.learn[lstep].t;
+    const nextText = step === "story" ? quest.story[panel + 1]?.t ?? quest.learn[0]?.t : quest.learn[lstep + 1]?.t;
+    if (nextText) preload(nextText);
+    const minMs = step === "learn" ? demoMs(quest.learn[lstep].demo) : 0;
+    (async () => {
+      const started = Date.now();
+      await narrate(text);
+      const left = minMs - (Date.now() - started);
+      if (left > 0) await sleep(left);
+      await sleep(GAP);
+      if (cancelled || !auto) return;
+      if (step === "story") {
+        if (panel + 1 < quest.story.length) setPanel(panel + 1);
+        else if (hasLearn) { setLstep(0); setStep("learn"); }
+      } else if (lstep + 1 < quest.learn.length) setLstep(lstep + 1);
+    })();
+    return () => { cancelled = true; };
+  }, [step, panel, lstep, auto, tick, quest, hasLearn]);
+
   useEffect(() => {
     if (step === "physical") say(P.phoneDown);
     if (step === "reward") { sfx.win(); setTimeout(() => say(P.newPower(quest.power.name)), 700); }
   }, [step, quest.power.name]);
   useEffect(() => { preload(quest.story[0].t); return () => stop(); }, [quest.story]);
   useEffect(() => { if (typeof window !== "undefined") window.scrollTo({ top: 0 }); }, [step, panel, lstep]);
+
+  const autoMs = (text: string, extra = 0) => readMs(text) + extra + GAP;
+  const skip = () => {
+    stop();
+    if (step === "story") {
+      if (panel + 1 < quest.story.length) setPanel(panel + 1);
+      else if (hasLearn) { setLstep(0); setStep("learn"); }
+    } else if (step === "learn" && lstep + 1 < quest.learn.length) setLstep(lstep + 1);
+  };
+  const AutoControls = ({ text, extra = 0, k }: { text: string; extra?: number; k: string }) => (
+    <>
+      {auto && <div className="autobar"><div key={k} style={{ animation: `grow ${autoMs(text, extra)}ms linear forwards` }} /></div>}
+    </>
+  );
 
   const afterGame = (r: Result) => {
     setResult(r);
@@ -95,7 +150,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
         <Link href="/" className="pill" style={{ textDecoration: "none" }}>← Map</Link>
         <div className="row" style={{ gap: 6 }}><MuteToggle /><span className="pill">Quest {quest.day}</span></div>
       </div>
-      {step !== "intro" && <StageBar step={step} hasLearn={hasLearn} />}
+      {step !== "intro" && <StageBar step={step} has={has} />}
 
       {step === "intro" && (
         <div className="fade-in">
@@ -116,28 +171,44 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
               </div>
             </div>
             <div style={{ marginTop: 18 }}>
-              <button className="btn" onClick={() => setStep("story")}>Start the quest!</button>
+              <button className="btn" onClick={() => setStep(warm ? "warmup" : "story")}>Start the quest!</button>
             </div>
             <p className="muted" style={{ fontSize: 12, marginTop: 18 }}>For Papa: skill {quest.skill} - {skill?.name}{quest.review.length ? `; review ${quest.review.join(", ")}` : ""}.</p>
           </div>
         </div>
       )}
 
+      {step === "warmup" && warm && (
+        <div className="fade-in">
+          <div className="learnhead">
+            <MooshakArt size={44} mood="excited" />
+            <div>
+              <div className="eyebrow">Warm-up</div>
+              <div style={{ fontWeight: 900, fontSize: 17 }}>Remember your powers?</div>
+            </div>
+          </div>
+          <GamePlayer game={warm} onDone={() => setStep("story")} />
+        </div>
+      )}
+
       {step === "story" && (
         <div className="fade-in" key={`s${panel}`}>
-          <SceneView scene={quest.story[panel].s} />
+          <div onClick={skip} style={{ cursor: "pointer" }}><SceneView scene={quest.story[panel].s} /></div>
           <div className="storycard">
             <p className="panel-text" style={{ margin: 0 }}>{quest.story[panel].t}</p>
             <div className="row spread" style={{ marginTop: 10 }}>
-              <button className="speak" onClick={() => say(quest.story[panel].t)}>▶ Play again</button>
+              <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚ Pause" : "▶ Play"}</button>
               <div className="dots">{quest.story.map((_, i) => <span key={i} className={i === panel ? "on" : i < panel ? "done" : ""} />)}</div>
             </div>
+            <AutoControls text={quest.story[panel].t} k={`s${panel}-${tick}`} />
           </div>
           <div className="row" style={{ marginTop: 12 }}>
             {panel > 0 && <button className="btn ghost" onClick={() => setPanel(panel - 1)}>Back</button>}
-            <button className="btn" style={{ flex: 1 }} onClick={() => (panel + 1 < quest.story.length ? setPanel(panel + 1) : setStep(hasLearn ? "learn" : "game"))}>
-              {panel + 1 < quest.story.length ? "Next" : hasLearn ? "Learn the trick!" : "Let's go!"}
-            </button>
+            {(!auto || panel + 1 === quest.story.length) && (
+              <button className={`btn ${panel + 1 === quest.story.length ? "pulse-btn" : ""}`} style={{ flex: 1 }} onClick={() => { stop(); if (panel + 1 < quest.story.length) setPanel(panel + 1); else setStep(hasLearn ? "learn" : "game"); }}>
+                {panel + 1 < quest.story.length ? "Next" : hasLearn ? "Learn the trick!" : "Let's go!"}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -151,27 +222,51 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
               <div style={{ fontWeight: 900, fontSize: 17 }}>{quest.power.name}</div>
             </div>
           </div>
-          <div className="card demo-card"><DemoView demo={quest.learn[lstep].demo} k={replay * 100 + lstep} /></div>
+          <div className="card demo-card" onClick={skip}><DemoView demo={quest.learn[lstep].demo} k={replay * 100 + lstep} /></div>
           <div className="storycard" style={{ marginTop: 10 }}>
             <p className="panel-text" style={{ margin: 0 }}>{quest.learn[lstep].t}</p>
             <div className="row spread" style={{ marginTop: 10 }}>
-              <button className="speak" onClick={() => { setReplay(replay + 1); say(quest.learn[lstep].t); }}>↻ Show again</button>
+              <button className="speak" onClick={() => { setReplay(replay + 1); setTick(tick + 1); }}>↻ Show again</button>
+              <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚" : "▶"}</button>
               <div className="dots">{quest.learn.map((_, i) => <span key={i} className={i === lstep ? "on" : i < lstep ? "done" : ""} />)}</div>
             </div>
+            <AutoControls text={quest.learn[lstep].t} extra={Math.max(0, demoMs(quest.learn[lstep].demo) - readMs(quest.learn[lstep].t))} k={`l${lstep}-${tick}`} />
           </div>
           <div className="row" style={{ marginTop: 12 }}>
             {lstep > 0 && <button className="btn ghost" onClick={() => setLstep(lstep - 1)}>Back</button>}
-            <button className="btn" style={{ flex: 1 }} onClick={() => (lstep + 1 < quest.learn.length ? setLstep(lstep + 1) : setStep("game"))}>
-              {lstep + 1 < quest.learn.length ? "Next" : "I got it! Let's play"}
-            </button>
+            {(!auto || lstep + 1 === quest.learn.length) && (
+              <button className={`btn ${lstep + 1 === quest.learn.length ? "pulse-btn" : ""}`} style={{ flex: 1 }} onClick={() => { stop(); if (lstep + 1 < quest.learn.length) setLstep(lstep + 1); else setStep(guidedGame ? "guided" : "game"); }}>
+                {lstep + 1 < quest.learn.length ? "Next" : "Now you try!"}
+              </button>
+            )}
           </div>
+        </div>
+      )}
+
+      {step === "guided" && guidedGame && (
+        <div className="fade-in">
+          <div className="learnhead">
+            <MooshakArt size={44} mood="happy" />
+            <div>
+              <div className="eyebrow">Try it with me</div>
+              <div style={{ fontWeight: 900, fontSize: 17 }}>{quest.power.name}</div>
+            </div>
+          </div>
+          <GamePlayer game={guidedGame} guided onDone={() => setStep("game")} />
+          {quest.talk && (
+            <div className="papa" style={{ marginTop: 14 }}>
+              <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="14" cy="13" r="7" fill="#8d6e63" /><path d="M3 36 Q14 18 25 36 Z" fill="#2f6fd6" /><circle cx="29" cy="19" r="5" fill="#f4b183" /><path d="M21 37 Q29 24 37 37 Z" fill="#f28c28" /></svg>
+              <div style={{ fontSize: 15, fontWeight: 700 }}><b>With Papa:</b> {quest.talk}</div>
+            </div>
+          )}
+
         </div>
       )}
 
       {step === "game" && (
         <div>
-          <p className="center" style={{ margin: "4px 0" }}><span className="pill">{quest.gameName}</span></p>
-          <GamePlayer game={quest.game} onDone={afterGame} />
+          <p className="center" style={{ margin: "4px 0" }}><span className="pill">You do it! · {quest.gameName}</span></p>
+          <GamePlayer game={mainGame} onDone={afterGame} />
         </div>
       )}
 

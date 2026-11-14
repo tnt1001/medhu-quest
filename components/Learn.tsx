@@ -27,7 +27,7 @@ const BigNum = ({ n, label }: { n: number; label?: string }) => (
   </div>
 );
 
-function CountDemo({ item, n, k }: { item: Item; n: number; k: number }) {
+export function CountDemo({ item, n, k }: { item: Item; n: number; k: number }) {
   const t = useTicker(n + 1, 850, k);
   return (
     <div>
@@ -49,7 +49,7 @@ const DICE: Record<number, [number, number][]> = {
   5: [[26, 26], [74, 26], [50, 50], [26, 74], [74, 74]], 6: [[28, 22], [72, 22], [28, 50], [72, 50], [28, 78], [72, 78]],
 };
 
-function GlanceDemo({ item, n, k }: { item: Item; n: number; k: number }) {
+export function GlanceDemo({ item, n, k }: { item: Item; n: number; k: number }) {
   const t = useTicker(2, 1100, k);
   const pts = DICE[n] ?? DICE[1];
   return (
@@ -64,7 +64,7 @@ function GlanceDemo({ item, n, k }: { item: Item; n: number; k: number }) {
   );
 }
 
-function GiveNDemo({ item, n, pile, k }: { item: Item; n: number; pile: number; k: number }) {
+export function GiveNDemo({ item, n, pile, k }: { item: Item; n: number; pile: number; k: number }) {
   const t = useTicker(n + 1, 900, k);
   const moved = Math.min(t, n);
   return (
@@ -87,7 +87,7 @@ function GiveNDemo({ item, n, pile, k }: { item: Item; n: number; pile: number; 
   );
 }
 
-function Frame5Demo({ n, k }: { n: number; k: number }) {
+export function Frame5Demo({ n, k }: { n: number; k: number }) {
   const t = useTicker(5, 350, k);
   return (
     <div className="center">
@@ -103,7 +103,7 @@ function Frame5Demo({ n, k }: { n: number; k: number }) {
   );
 }
 
-function ConserveDemo({ item, n, k }: { item: Item; n: number; k: number }) {
+export function ConserveDemo({ item, n, k }: { item: Item; n: number; k: number }) {
   const t = useTicker(2, 1500, k);
   const spread = t >= 1;
   const pos = (i: number) => {
@@ -124,7 +124,7 @@ function ConserveDemo({ item, n, k }: { item: Item; n: number; k: number }) {
   );
 }
 
-function MatchDemo({ item, a, b, k }: { item: Item; a: number; b: number; k: number }) {
+export function MatchDemo({ item, a, b, k }: { item: Item; a: number; b: number; k: number }) {
   const pairs = Math.min(a, b);
   const t = useTicker(pairs + 1, 700, k);
   const W = 44;
@@ -154,7 +154,7 @@ function MatchDemo({ item, a, b, k }: { item: Item; a: number; b: number; k: num
   );
 }
 
-function DiceDemo({ n, k }: { n: number; k: number }) {
+export function DiceDemo({ n, k }: { n: number; k: number }) {
   const t = useTicker(1, 900, k);
   return (
     <div className="center">
@@ -170,7 +170,7 @@ function DiceDemo({ n, k }: { n: number; k: number }) {
 }
 
 const COLORS: Record<string, string> = { red: "#d64545", blue: "#2f6fd6", yellow: "#f2c230", green: "#2e9d5b" };
-function PatternDemo({ seq, k }: { seq: string[]; k: number }) {
+export function PatternDemo({ seq, k }: { seq: string[]; k: number }) {
   let unit = seq.length;
   for (let len = 1; len <= seq.length; len++) if (seq.every((c, i) => c === seq[i % len])) { unit = len; break; }
   const t = useTicker(seq.length, 450, k);
@@ -188,7 +188,7 @@ function PatternDemo({ seq, k }: { seq: string[]; k: number }) {
   );
 }
 
-function ShapeDemo({ shape, k }: { shape: "circle" | "triangle" | "square" | "rectangle"; k: number }) {
+export function ShapeDemo({ shape, k }: { shape: "circle" | "triangle" | "square" | "rectangle"; k: number }) {
   const corners: Record<string, [number, number][]> = {
     circle: [], triangle: [[32, 6], [59, 56], [5, 56]], square: [[8, 8], [56, 8], [56, 56], [8, 56]], rectangle: [[2, 18], [62, 18], [62, 48], [2, 48]],
   };
@@ -208,7 +208,7 @@ function ShapeDemo({ shape, k }: { shape: "circle" | "triangle" | "square" | "re
   );
 }
 
-function NumberDemo({ n }: { n: number }) {
+export function NumberDemo({ n }: { n: number }) {
   return (
     <div className="center pop">
       <div style={{ fontSize: 110, fontWeight: 900, color: "#f28c28", lineHeight: 1, textShadow: "0 5px 0 #f6d38b" }}>{n}</div>

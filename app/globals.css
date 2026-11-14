@@ -154,3 +154,28 @@ table.t th { font-size: 12px; text-transform: uppercase; letter-spacing: .03em; 
 .node.trophy .node-circle { margin: 0; }
 
 .today-card .btn { white-space: nowrap; flex-shrink: 0; }
+
+/* Mooshak companion and richer game stages */
+.companion { display: flex; align-items: flex-end; gap: 6px; margin-top: 12px; }
+.bubble { position: relative; background: white; border: 2px solid var(--line); border-radius: 18px; padding: 10px 14px; font-weight: 800; font-size: 16px; line-height: 1.3; margin-bottom: 14px; }
+.bubble::before { content: ""; position: absolute; left: -9px; bottom: 12px; border: 8px solid transparent; border-right-color: var(--line); border-left: 0; }
+.bubble.excited { border-color: #2e9d5b; background: #eaf8ef; color: #1f7a43; }
+.bubble.thinking { border-color: #f2c230; background: #fffbea; }
+.burst { position: fixed; left: 50%; top: 38%; font-size: 120px; color: #f2c230; text-shadow: 0 6px 0 #c99a10; pointer-events: none; z-index: 50; animation: burst .9s ease-out forwards; }
+@keyframes burst { 0% { transform: translate(-50%, -50%) scale(.2) rotate(-20deg); opacity: 1; } 60% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; } 100% { transform: translate(-50%, -80%) scale(1) rotate(0); opacity: 0; } }
+.stage { background: radial-gradient(circle at 50% 20%, #ffffff, #fff5e3); border: 3px solid #f6dfbf; box-shadow: inset 0 -6px 0 rgba(242,140,40,.08); }
+.modakbar { display: flex; gap: 4px; justify-content: center; margin: 8px 0; }
+.modakbar span { opacity: .25; filter: grayscale(1); transition: all .3s; }
+.modakbar span.on { opacity: 1; filter: none; transform: scale(1.08); }
+.explain { margin-top: 12px; background: #fffbea; border: 2px dashed #f2c230; border-radius: 18px; padding: 10px; }
+.explain-title { font-weight: 900; color: #8a5a1a; text-align: center; margin-bottom: 4px; }
+.hintbar { display: flex; align-items: center; gap: 8px; background: #e9f4ff; border: 2px solid #b9dafc; border-radius: 16px; padding: 8px 12px; font-weight: 800; font-size: 15px; margin-bottom: 8px; }
+.papa { display: flex; gap: 12px; align-items: center; background: #eef7ee; border: 2px solid #bfe3c9; border-radius: 20px; padding: 14px; }
+.autobar { height: 5px; background: var(--line); border-radius: 9px; overflow: hidden; margin-top: 10px; }
+.autobar div { height: 100%; background: var(--saffron); border-radius: 9px; }
+
+@keyframes grow { from { width: 0; } to { width: 100%; } }
+.pulse-btn { animation: pulsebtn 1.4s ease-in-out infinite; }
+@keyframes pulsebtn { 50% { transform: scale(1.04); } }
+.stg { flex: 0 0 auto; padding: 5px 8px; }
+.stg.on { flex: 1 1 auto; }
