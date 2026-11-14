@@ -13,7 +13,7 @@ import MuteToggle from "@/components/MuteToggle";
 import MusicToggle from "@/components/MusicToggle";
 import { ARCS, CARDS, QUESTS, STARS_PER_CARD, type Quest } from "@/content/quests";
 import { SKILLS } from "@/content/skills";
-import { narrate, preload, readMs, say, sfx, sleep, stop } from "@/lib/audio";
+import { narrate, preload, say, sfx, sleep, stop } from "@/lib/audio";
 import type { Demo } from "@/content/quests";
 import { P } from "@/lib/phrases";
 
@@ -86,6 +86,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
   const mainGame = (guidedGame && quest.game.type !== "mixed" ? sliceGame(quest.game, 1) : quest.game) ?? quest.game;
   const has = { warm: !!warm, learn: hasLearn, try: !!guidedGame };
   const [auto, setAuto] = useState(true);
+  const [phase, setPhase] = useState<"enter" | "speaking" | "gap" | "idle">("enter");
   const [tick, setTick] = useState(0);
 
   // Story and Learn play themselves: narrate, let the picture finish, wait 1.5s, move on.
@@ -97,10 +98,21 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
     if (nextText) preload(nextText);
     const minMs = step === "learn" ? demoMs(quest.learn[lstep].demo) : 0;
     (async () => {
+      // Let the new card slide in, then read it; only move on once the reading has finished.
+      setPhase("enter");
+      await sleep(350);
+      if (cancelled) return;
+      setPhase("speaking");
       const started = Date.now();
       await narrate(text);
+      if (cancelled) return;
       const left = minMs - (Date.now() - started);
       if (left > 0) await sleep(left);
+      if (cancelled) return;
+      if (!auto) { setPhase("idle"); return; }
+      const last = step === "story" ? panel + 1 >= quest.story.length && !hasLearn : lstep + 1 >= quest.learn.length;
+      if (last) { setPhase("idle"); return; }
+      setPhase("gap");
       await sleep(GAP);
       if (cancelled || !auto) return;
       if (step === "story") {
@@ -119,7 +131,6 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
   useEffect(() => { if (typeof window !== "undefined") window.scrollTo({ top: 0 }); }, [step, panel, lstep]);
   useEffect(() => { if (step === "story" && panel > 0) sfx.swish(); }, [step, panel]);
 
-  const autoMs = (text: string, extra = 0) => readMs(text) + extra + GAP;
   const skip = () => {
     stop();
     if (step === "story") {
@@ -127,10 +138,11 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
       else if (hasLearn) { setLstep(0); setStep("learn"); }
     } else if (step === "learn" && lstep + 1 < quest.learn.length) setLstep(lstep + 1);
   };
-  const AutoControls = ({ text, extra = 0, k }: { text: string; extra?: number; k: string }) => (
-    <>
-      {auto && <div className="autobar"><div key={k} style={{ animation: `grow ${autoMs(text, extra)}ms linear forwards` }} /></div>}
-    </>
+  const AutoControls = ({ k }: { text?: string; extra?: number; k: string }) => (
+    <div className="autostatus">
+      {phase === "speaking" && <span className="wave" aria-label="reading"><i /><i /><i /><i /></span>}
+      {phase === "gap" && auto && <div className="autobar"><div key={k} style={{ animation: `grow ${GAP}ms linear forwards` }} /></div>}
+    </div>
   );
 
   const afterGame = (r: Result) => {
@@ -226,7 +238,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
               <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚ Pause" : "▶ Play"}</button>
               <div className="dots">{quest.story.map((_, i) => <span key={i} className={i === panel ? "on" : i < panel ? "done" : ""} />)}</div>
             </div>
-            <AutoControls text={quest.story[panel].t} k={`s${panel}-${tick}`} />
+            <AutoControls k={`s${panel}-${tick}`} />
           </div>
           <div className="row" style={{ marginTop: 12 }}>
             {panel > 0 && <button className="btn ghost" onClick={() => setPanel(panel - 1)}>Back</button>}
@@ -256,7 +268,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
               <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚" : "▶"}</button>
               <div className="dots">{quest.learn.map((_, i) => <span key={i} className={i === lstep ? "on" : i < lstep ? "done" : ""} />)}</div>
             </div>
-            <AutoControls text={quest.learn[lstep].t} extra={Math.max(0, demoMs(quest.learn[lstep].demo) - readMs(quest.learn[lstep].t))} k={`l${lstep}-${tick}`} />
+            <AutoControls k={`l${lstep}-${tick}`} />
           </div>
           <div className="row" style={{ marginTop: 12 }}>
             {lstep > 0 && <button className="btn ghost" onClick={() => setLstep(lstep - 1)}>Back</button>}
