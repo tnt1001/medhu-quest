@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Badge, ItemArt } from "@/components/Art";
+import { ItemArt } from "@/components/Art";
 import { CardPortrait, MooshakArt } from "@/components/Cast";
+import { Avatar } from "@/components/Avatars";
 import { SceneView } from "@/components/Scene";
 import { DemoView } from "@/components/Learn";
 import { EasyWin, GamePlayer, MistakeRound, sliceGame } from "@/components/games/Games";
@@ -17,7 +18,6 @@ import { P } from "@/lib/phrases";
 
 type Step = "intro" | "warmup" | "story" | "learn" | "guided" | "game" | "physical" | "mistake" | "easy" | "reward";
 
-const cardColor = (name: string) => CARDS.find((c) => c.name === name)?.color ?? "#8d6e63";
 
 const STAGES: { key: string; label: string; steps: Step[] }[] = [
   { key: "warm", label: "Warm-up", steps: ["warmup"] },
@@ -69,6 +69,15 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
   const [mooshakFixed, setMooshakFixed] = useState(false);
   const [reward, setReward] = useState<{ stars: number; total: number; error?: string } | null>(null);
   const skill = SKILLS.find((s) => s.id === quest.skill);
+  // Games unlock in order. Papa can open any game with ?papa=1.
+  const [lockedBy, setLockedBy] = useState<number | null>(null);
+  useEffect(() => {
+    if (quest.day === 1 || new URLSearchParams(window.location.search).get("papa") === "1") return;
+    fetch("/api/state").then((r) => r.json()).then((d: { completed: number[] }) => {
+      const done = new Set(d.completed ?? []);
+      if (!done.has(quest.day) && !done.has(quest.day - 1)) setLockedBy(QUESTS.find((q) => !done.has(q.day))?.day ?? 1);
+    }).catch(() => {});
+  }, [quest.day]);
   const hasLearn = quest.learn.length > 0;
 
   const warm = warmupFor(quest.review);
@@ -144,11 +153,26 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
     }
   };
 
+  if (lockedBy) {
+    const need = QUESTS.find((q) => q.day === lockedBy);
+    return (
+      <main className="wrap center" style={{ paddingTop: 60 }}>
+        <MooshakArt size={110} mood="thinking" />
+        <p className="big">This game is locked!</p>
+        <p style={{ fontSize: 18, fontWeight: 700 }}>Games open one by one. Your next game is <b>Game {lockedBy}: {need?.title}</b>.</p>
+        <div className="row" style={{ justifyContent: "center", gap: 10, marginTop: 16 }}>
+          <Link href="/" className="btn ghost" style={{ textDecoration: "none" }}>Map</Link>
+          <Link href={`/quest/${lockedBy}`} className="btn" style={{ textDecoration: "none" }}>Go to Game {lockedBy}</Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="wrap">
       <div className="row spread" style={{ marginBottom: 8 }}>
         <Link href="/" className="pill" style={{ textDecoration: "none" }}>← Map</Link>
-        <div className="row" style={{ gap: 6 }}><MuteToggle /><span className="pill">Quest {quest.day}</span></div>
+        <div className="row" style={{ gap: 6 }}><MuteToggle /><span className="pill">Game {quest.day}</span></div>
       </div>
       {step !== "intro" && <StageBar step={step} has={has} />}
 
@@ -156,11 +180,11 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
         <div className="fade-in">
           <SceneView scene={quest.story[0].s} height="clamp(220px, 40dvh, 340px)" />
           <div className="center" style={{ marginTop: 14 }}>
-            <div className="eyebrow">Quest {quest.day}</div>
+            <div className="eyebrow">Game {quest.day}</div>
             <h1 className="big" style={{ margin: "4px 0 10px" }}>{quest.title}</h1>
             <div className="row" style={{ justifyContent: "center", flexWrap: "wrap", gap: 10 }}>
               {quest.costars.map((c) => (
-                <div key={c} className="row" style={{ gap: 6 }}><Badge name={c} color={cardColor(c)} size={30} /><b style={{ fontSize: 14 }}>{c}</b></div>
+                <div key={c} className="center" style={{ width: 74 }}><div className="row" style={{ justifyContent: "center" }}><Avatar name={c} size={52} /></div><b style={{ fontSize: 12, display: "block", marginTop: 4 }}>{c}</b></div>
               ))}
             </div>
             <div className="power-chip" style={{ marginTop: 14 }}>

@@ -1,3 +1,4 @@
+import { Avatar } from "@/components/Avatars";
 // The cartoon cast, drawn as SVG so every character looks the same everywhere.
 // Marvel heroes are named in stories but never drawn; their presence is shown
 // through props (a web, motion lines), not their likeness.
@@ -130,10 +131,6 @@ export function Toran() {
 
 // Card portrait: drawn art where we have it, initials badge otherwise.
 export function CardPortrait({ name, color, size = 90 }: { name: string; color: string; size?: number }) {
-  if (name === "Mooshak") return <MooshakArt size={size} mood="excited" />;
-  if (name === "Ganesha") return <GaneshaArt size={size * 0.9} />;
-  const initials = name.split(/[\s-]+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  return (
-    <div style={{ width: size, height: size, borderRadius: "50%", background: color, color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: size * 0.36, border: "4px solid white", boxShadow: "0 3px 0 rgba(0,0,0,.12)" }}>{initials}</div>
-  );
+  void color;
+  return <Avatar name={name} size={size} />;
 }
