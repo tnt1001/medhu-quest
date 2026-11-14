@@ -1,0 +1,53 @@
+CREATE TABLE skill_levels (
+  skill_id TEXT PRIMARY KEY,
+  level INTEGER NOT NULL DEFAULT 0,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE skill_level_history (
+  id SERIAL PRIMARY KEY,
+  skill_id TEXT NOT NULL,
+  level INTEGER NOT NULL,
+  source TEXT NOT NULL DEFAULT 'auto',
+  changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE logs (
+  id SERIAL PRIMARY KEY,
+  log_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  quest_day INTEGER,
+  skill_id TEXT NOT NULL,
+  game TEXT,
+  tries INTEGER NOT NULL DEFAULT 0,
+  correct INTEGER NOT NULL DEFAULT 0,
+  method INTEGER,
+  engagement INTEGER,
+  note TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE quest_completions (
+  id SERIAL PRIMARY KEY,
+  quest_day INTEGER NOT NULL,
+  stars INTEGER NOT NULL DEFAULT 0,
+  summary JSONB,
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE checks (
+  id SERIAL PRIMARY KEY,
+  check_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  label TEXT NOT NULL,
+  scores JSONB NOT NULL,
+  total INTEGER NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE rewards (
+  id SERIAL PRIMARY KEY,
+  kind TEXT NOT NULL DEFAULT 'star',
+  amount INTEGER NOT NULL DEFAULT 0,
+  reason TEXT NOT NULL,
+  quest_day INTEGER,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Medhu's Quest
 
-## Getting Started
+Adaptive maths quests for Medhansh (age 4), with Mooshak, Hindu gods and superheroes.
+Design doc: https://claude.ai/artifact/8QiaY7xwdvWZMTAWYK7qaQ
 
-First, run the development server:
+## Stack
+- Next.js 15 (App Router), React 19, TypeScript
+- Netlify (hosting + functions)
+- Netlify Database (Postgres), migrations in `netlify/database/migrations/`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Structure
+- `content/skills.ts` - 31-skill map, check items, number words (English + Hindi)
+- `content/quests.ts` - story arcs, hero cards, Arc 1 quests (14)
+- `lib/engine.ts` - mastery rule + daily recommendation (adaptation rules)
+- `app/` - kid side (`/`, `/quest/[day]`, `/cards`) and admin (`/admin`, PIN)
+- `app/api/` - state, quest completion, admin data/actions
+
+## Environment variables (Netlify)
+- `ADMIN_PIN` - PIN for /admin
+- `ADMIN_SECRET` - random string used to sign the admin cookie
+
+## Local development
+```
+npm install
+npm run db:dev          # starts a local Postgres on :54329 with migrations applied
+NETLIFY_DB_URL=postgres://postgres@localhost:54329/postgres ADMIN_PIN=1234 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Adding Arc 2
+Add quests 15-28 to `content/quests.ts`. Game types available: count, flash (scatter/dice/frame5), giveN, conserve, compare, pattern, shapes, mixed, check.
