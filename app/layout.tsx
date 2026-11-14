@@ -5,9 +5,11 @@ export const metadata: Metadata = {
   title: "Medhu's Quest",
   description: "Maths quests with Mooshak, gods and superheroes",
   robots: { index: false, follow: false },
+  appleWebApp: { capable: true, title: "Medhu's Quest", statusBarStyle: "default" },
+  formatDetection: { telephone: false },
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, themeColor: "#fff8ec" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, userScalable: false, viewportFit: "cover", themeColor: "#fff8ec" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

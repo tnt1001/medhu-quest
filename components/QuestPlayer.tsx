@@ -1,12 +1,14 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge, ItemArt, Mooshak } from "@/components/Art";
 import { EasyWin, GamePlayer, MistakeRound } from "@/components/games/Games";
 import type { Result } from "@/components/games/common";
 import { ARCS, CARDS, QUESTS, STARS_PER_CARD, type Quest } from "@/content/quests";
 import { SKILLS } from "@/content/skills";
-import { speak } from "@/lib/speech";
+import { preload, say, sfx, stop } from "@/lib/audio";
+import { P } from "@/lib/phrases";
+import MuteToggle from "@/components/MuteToggle";
 
 type Step = "intro" | "story" | "game" | "physical" | "mistake" | "easy" | "reward";
 
@@ -19,6 +21,18 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
   const [mooshakFixed, setMooshakFixed] = useState(false);
   const [reward, setReward] = useState<{ stars: number; total: number; error?: string } | null>(null);
   const skill = SKILLS.find((s) => s.id === quest.skill);
+
+  // Narrate each story panel as it appears, and fetch the next one in advance.
+  useEffect(() => {
+    if (step !== "story") return;
+    say(quest.story[panel]);
+    if (quest.story[panel + 1]) preload(quest.story[panel + 1]);
+  }, [step, panel, quest.story]);
+  useEffect(() => {
+    if (step === "physical") say(P.phoneDown);
+    if (step === "reward") { sfx.win(); setTimeout(() => say(P.questDone), 700); }
+  }, [step]);
+  useEffect(() => { preload(quest.story[0]); return () => stop(); }, [quest.story]);
 
   const afterGame = (r: Result) => {
     setResult(r);
@@ -46,7 +60,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
     <main className="wrap">
       <div className="row spread" style={{ marginBottom: 12 }}>
         <Link href="/" className="pill" style={{ textDecoration: "none" }}>Home</Link>
-        <span className="pill">Quest {quest.day}</span>
+        <div className="row" style={{ gap: 6 }}><MuteToggle /><span className="pill">Quest {quest.day}</span></div>
       </div>
 
       {step === "intro" && (
@@ -67,10 +81,10 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
 
       {step === "story" && (
         <div className="fade-in" key={panel}>
-          <div className="card" style={{ minHeight: 260, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="card" style={{ minHeight: "var(--story-h)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <p className="panel-text">{quest.story[panel]}</p>
             <div className="row spread">
-              <button className="speak" onClick={() => speak(quest.story[panel])}>Read aloud</button>
+              <button className="speak" onClick={() => say(quest.story[panel])}>Play again</button>
               <span className="muted" style={{ fontWeight: 700 }}>{panel + 1} / {quest.story.length}</span>
             </div>
           </div>

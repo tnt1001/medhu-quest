@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { ItemArt } from "@/components/Art";
 import type { Item } from "@/content/quests";
-import { numberWords, sayNumber } from "@/lib/speech";
+import { numberWords, sayNumber, sfx } from "@/lib/audio";
 
 export interface Result {
   tries: number;
@@ -50,9 +50,11 @@ export function NumberChoices({ answer, seed, onAnswer }: { answer: number; seed
             onClick={() => {
               if (n === answer) {
                 setDone(true);
-                sayNumber(n);
+                sfx.right();
+                setTimeout(() => sayNumber(n), 250);
                 setTimeout(() => onAnswer(wrong.length === 0, wrong.length > 0), 1100);
               } else {
+                sfx.wrong();
                 setWrong((w) => [...w, n]);
               }
             }}
@@ -87,7 +89,7 @@ export function scatter(n: number, seed: number) {
 export function Scattered({ n, item, seed, size = 52 }: { n: number; item: Item; seed: number; size?: number }) {
   const pts = scatter(n, seed);
   return (
-    <div style={{ position: "relative", width: "100%", height: 240 }}>
+    <div style={{ position: "relative", width: "100%", height: "var(--stage-h)" }}>
       {pts.map((p, i) => (
         <div key={i} style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%,-50%)" }}>
           <ItemArt item={item} size={size} />

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CHECK_ITEMS, CHECK_STRANDS, LEVELS, SKILLS, STRANDS, type Strand } from "@/content/skills";
 import { CARDS, QUESTS, STARS_PER_CARD } from "@/content/quests";
+import { say, ttsUrl } from "@/lib/audio";
 
 interface Log { id: number; log_date: string; quest_day: number | null; skill_id: string; game: string | null; tries: number; correct: number; method: number | null; engagement: number | null; note: string | null }
 interface Check { id: number; check_date: string; label: string; scores: number[]; total: number }
@@ -17,7 +18,7 @@ interface Data {
   rec: { target: string | null; side: string | null; review: string[]; hints: string[]; questsForTarget: number[] };
 }
 
-const TABS = ["Today", "Skills", "Checks", "Rewards", "Sync"] as const;
+const TABS = ["Today", "Skills", "Checks", "Rewards", "Sync", "Audio"] as const;
 const today = () => new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);
 const skillName = (id: string) => SKILLS.find((s) => s.id === id)?.name ?? id;
 const GAMES = Array.from(new Set(["Flash!", "How Many Hiding", "Modak Shop", "Tray Fill", "Hanuman Hop", "Smash & Count", "Shrink & Grow", "Mooshak's Mistakes", "Race to Lanka", "Battle Cards", "Story Theatre", "Pattern Garland", "Shape Quest", "Assemble the Team", ...QUESTS.map((q) => q.gameName), "Everyday maths"]));
@@ -86,6 +87,7 @@ export default function Admin() {
           {tab === "Checks" && <ChecksTab data={data} reload={load} />}
           {tab === "Rewards" && <RewardsTab data={data} reload={load} />}
           {tab === "Sync" && <SyncTab data={data} />}
+          {tab === "Audio" && <AudioTab />}
         </>
       )}
     </main>
@@ -106,9 +108,10 @@ function TodayTab({ data, reload }: { data: Data; reload: () => void }) {
         <h2 style={{ marginTop: 0 }}>What to work on</h2>
         <p><b>Next quest:</b> {nextQuest ? `Quest ${nextQuest.day} - ${nextQuest.title} (${nextQuest.skill})` : "Arc 1 complete"}</p>
         <p><b>Target skill:</b> {rec.target ? `${rec.target} - ${skillName(rec.target)} (${LEVELS[data.levels[rec.target] ?? 0]})` : "All core skills secure"}</p>
-        {rec.target && nextQuest && nextQuest.skill !== rec.target && (
+        {rec.target && nextQuest && nextQuest.skill !== rec.target && rec.questsForTarget.length > 0 && (
           <p className="hint">The next quest teaches {nextQuest.skill}, but the map says {rec.target} needs work first.{rec.questsForTarget.length ? ` Consider replaying quest ${rec.questsForTarget.join(" or ")}.` : ""}</p>
         )}
+        {data.checks.length === 0 && <p className="hint">After the baseline check (quests 1-3), set the skills he already has (likely C1, S1, R1, G1) in the Skills tab, so the plan starts at the right place.</p>}
         <p><b>Side skill:</b> {rec.side ? `${rec.side} - ${skillName(rec.side)}` : "-"}</p>
         <p><b>Review:</b> {rec.review.length ? rec.review.map((r) => `${r} - ${skillName(r)}`).join("; ") : "Nothing due"}</p>
         {rec.hints.map((h) => <p key={h} className="hint">{h}</p>)}
@@ -338,6 +341,51 @@ function SyncTab({ data }: { data: Data }) {
       <p className="muted" style={{ fontSize: 14 }}>Copy this into our sync chat.</p>
       <pre className="card" style={{ whiteSpace: "pre-wrap", fontSize: 14, lineHeight: 1.5 }}>{text}</pre>
       <button className="btn small" onClick={() => navigator.clipboard?.writeText(text)}>Copy</button>
+    </div>
+  );
+}
+
+function AudioTab() {
+  const [configured, setConfigured] = useState<boolean | null>(null);
+  const [progress, setProgress] = useState<{ done: number; total: number; failed: number } | null>(null);
+  const [lastError, setLastError] = useState("");
+  useEffect(() => { fetch("/api/tts?status=1").then((r) => r.json()).then((d) => setConfigured(d.configured)).catch(() => setConfigured(false)); }, []);
+
+  const warm = async () => {
+    const r = await fetch("/api/tts?list=1");
+    if (!r.ok) return setLastError("Could not load phrase list");
+    const { phrases } = (await r.json()) as { phrases: { text: string; voice: "narrator" | "mooshak" }[] };
+    let done = 0, failed = 0;
+    setProgress({ done, total: phrases.length, failed });
+    for (const p of phrases) {
+      const res = await fetch(ttsUrl(p.text, p.voice)).catch(() => null);
+      if (!res || !res.ok) { failed++; if (res) setLastError(await res.text()); }
+      done++;
+      setProgress({ done, total: phrases.length, failed });
+    }
+  };
+
+  return (
+    <div>
+      <h2>Voices (ElevenLabs)</h2>
+      <p>Status: {configured === null ? "checking..." : configured ? "API key set - AI voices on" : "No API key yet - the app uses the phone's built-in voice"}</p>
+      <div className="row" style={{ flexWrap: "wrap" }}>
+        <button className="btn small" onClick={() => say("Ganesha's birthday feast is in 2 weeks! Ganesha wants 100 modaks for all his friends.")}>Test narrator</button>
+        <button className="btn small ghost" onClick={() => say("Thank you, Medhu! You fixed my mistake!", "mooshak")}>Test Mooshak</button>
+        <button className="btn small ghost" onClick={() => say("five... पाँच")}>Test number</button>
+      </div>
+      <h2>Pre-generate all audio</h2>
+      <p className="muted" style={{ fontSize: 14 }}>Run once after adding the key (and after new content), so every line plays instantly. Each line is generated once and cached.</p>
+      <button className="btn small" disabled={!configured || (progress !== null && progress.done < progress.total)} onClick={warm}>Generate all lines</button>
+      {progress && <p>{progress.done} / {progress.total} lines ready{progress.failed ? `, ${progress.failed} failed` : ""}</p>}
+      {lastError && <p className="hint">Last error: {lastError.slice(0, 200)}</p>}
+      <h2>Setup</h2>
+      <ol style={{ fontSize: 14, lineHeight: 1.6 }}>
+        <li>In ElevenLabs, create an API key with Text to Speech access.</li>
+        <li>In Netlify, Project configuration, Environment variables, add <b>ELEVENLABS_API_KEY</b>.</li>
+        <li>Optional: pick voices in the ElevenLabs Voice Library and add their IDs as <b>ELEVENLABS_VOICE_NARRATOR</b> and <b>ELEVENLABS_VOICE_MOOSHAK</b>.</li>
+        <li>Redeploy, then press Generate all lines.</li>
+      </ol>
     </div>
   );
 }
