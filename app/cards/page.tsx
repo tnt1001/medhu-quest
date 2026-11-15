@@ -19,8 +19,8 @@ export default function Cards() {
         <Link href="/" className="pill" style={{ textDecoration: "none" }}>Home</Link>
         <div className="row" style={{ gap: 6 }}><ItemArt item="star" size={28} /><b style={{ fontSize: 22 }}>{stars}</b></div>
       </div>
-      <h1 className="big" style={{ margin: "16px 0 4px" }}>Meri powers</h1>
-      <p className="muted" style={{ fontWeight: 700, marginTop: 0 }}>Har game se milti hai ek nayi maths power.</p>
+      <h1 className="big" style={{ margin: "16px 0 4px" }}>My powers</h1>
+      <p className="muted" style={{ fontWeight: 700, marginTop: 0 }}>Every quest teaches you a new maths power.</p>
       <div style={{ display: "grid", gap: 8, marginBottom: 22 }}>
         {powers.map((q) => {
           const got = completed.includes(q.day);
@@ -29,14 +29,14 @@ export default function Cards() {
               <span className="power-ico">{got ? "⚡" : "?"}</span>
               <div>
                 <div style={{ fontWeight: 900 }}>{q.power.name}</div>
-                <div style={{ fontSize: 13, color: "#7a6a5a" }}>{got ? q.power.desc : `Game ${q.day} mein jeeto`}</div>
+                <div style={{ fontSize: 13, color: "#7a6a5a" }}>{got ? q.power.desc : `Win it in quest ${q.day}`}</div>
               </div>
             </div>
           );
         })}
       </div>
       <h2 className="title" style={{ margin: "8px 0 4px" }}>Hero cards</h2>
-      <p className="muted" style={{ fontWeight: 700, marginTop: 0 }}>Har {STARS_PER_CARD} stars par naya card. Bas {STARS_PER_CARD - (stars % STARS_PER_CARD)} aur!</p>
+      <p className="muted" style={{ fontWeight: 700, marginTop: 0 }}>A new card every {STARS_PER_CARD} stars. {STARS_PER_CARD - (stars % STARS_PER_CARD)} more to go!</p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
         {CARDS.map((c, k) => {
           const got = k < unlocked;

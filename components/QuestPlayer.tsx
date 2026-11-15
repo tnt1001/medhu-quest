@@ -172,11 +172,11 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
     return (
       <main className="wrap center" style={{ paddingTop: 60 }}>
         <MooshakArt size={110} mood="thinking" />
-        <p className="big">Yeh game abhi locked hai!</p>
-        <p style={{ fontSize: 18, fontWeight: 700 }}>Games ek ek karke khulte hain. Tumhara agla game hai <b>Game {lockedBy}: {need?.title}</b>.</p>
+        <p className="big">This game is locked!</p>
+        <p style={{ fontSize: 18, fontWeight: 700 }}>Games open one by one. Your next game is <b>Game {lockedBy}: {need?.title}</b>.</p>
         <div className="row" style={{ justifyContent: "center", gap: 10, marginTop: 16 }}>
           <Link href="/" className="btn ghost" style={{ textDecoration: "none" }}>Map</Link>
-          <Link href={`/quest/${lockedBy}`} className="btn" style={{ textDecoration: "none" }}>Game {lockedBy} khelo</Link>
+          <Link href={`/quest/${lockedBy}`} className="btn" style={{ textDecoration: "none" }}>Go to Game {lockedBy}</Link>
         </div>
       </main>
     );
@@ -204,12 +204,12 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             <div className="power-chip" style={{ marginTop: 14 }}>
               <span className="power-ico">⚡</span>
               <div style={{ textAlign: "left" }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#8a5a1a", textTransform: "uppercase", letterSpacing: ".05em" }}>Jeetne wali power</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#8a5a1a", textTransform: "uppercase", letterSpacing: ".05em" }}>Power to win</div>
                 <div style={{ fontWeight: 900 }}>{quest.power.name}</div>
               </div>
             </div>
             <div style={{ marginTop: 18 }}>
-              <button className="btn" onClick={() => setStep(warm ? "warmup" : "story")}>Chalo, shuru karein!</button>
+              <button className="btn" onClick={() => setStep(warm ? "warmup" : "story")}>Start the quest!</button>
             </div>
             <p className="muted" style={{ fontSize: 12, marginTop: 18 }}>For Papa: skill {quest.skill} - {skill?.name}{quest.review.length ? `; review ${quest.review.join(", ")}` : ""}.</p>
           </div>
@@ -222,7 +222,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             <MooshakArt size={44} mood="excited" />
             <div>
               <div className="eyebrow">Warm-up</div>
-              <div style={{ fontWeight: 900, fontSize: 17 }}>Apni powers yaad hain?</div>
+              <div style={{ fontWeight: 900, fontSize: 17 }}>Remember your powers?</div>
             </div>
           </div>
           <GamePlayer game={warm} onDone={() => setStep("story")} />
@@ -235,16 +235,16 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
           <div className="storycard">
             <p className="panel-text" style={{ margin: 0 }}>{quest.story[panel].t}</p>
             <div className="row spread" style={{ marginTop: 10 }}>
-              <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚ Ruko" : "▶ Chalao"}</button>
+              <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚ Pause" : "▶ Play"}</button>
               <div className="dots">{quest.story.map((_, i) => <span key={i} className={i === panel ? "on" : i < panel ? "done" : ""} />)}</div>
             </div>
             <AutoControls k={`s${panel}-${tick}`} />
           </div>
           <div className="row" style={{ marginTop: 12 }}>
-            {panel > 0 && <button className="btn ghost" onClick={() => setPanel(panel - 1)}>Peeche</button>}
+            {panel > 0 && <button className="btn ghost" onClick={() => setPanel(panel - 1)}>Back</button>}
             {(!auto || panel + 1 === quest.story.length) && (
               <button className={`btn ${panel + 1 === quest.story.length ? "pulse-btn" : ""}`} style={{ flex: 1 }} onClick={() => { stop(); if (panel + 1 < quest.story.length) setPanel(panel + 1); else setStep(hasLearn ? "learn" : "game"); }}>
-                {panel + 1 < quest.story.length ? "Aage" : hasLearn ? "Trick seekho!" : "Chalo!"}
+                {panel + 1 < quest.story.length ? "Next" : hasLearn ? "Learn the trick!" : "Let's go!"}
               </button>
             )}
           </div>
@@ -256,7 +256,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
           <div className="learnhead">
             <MooshakArt size={44} mood="excited" />
             <div>
-              <div className="eyebrow">Seekho · {lstep + 1} / {quest.learn.length}</div>
+              <div className="eyebrow">Learn · {lstep + 1} of {quest.learn.length}</div>
               <div style={{ fontWeight: 900, fontSize: 17 }}>{quest.power.name}</div>
             </div>
           </div>
@@ -264,17 +264,17 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
           <div className="storycard" style={{ marginTop: 10 }}>
             <p className="panel-text" style={{ margin: 0 }}>{quest.learn[lstep].t}</p>
             <div className="row spread" style={{ marginTop: 10 }}>
-              <button className="speak" onClick={() => { setReplay(replay + 1); setTick(tick + 1); }}>↻ Phir se</button>
+              <button className="speak" onClick={() => { setReplay(replay + 1); setTick(tick + 1); }}>↻ Show again</button>
               <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚" : "▶"}</button>
               <div className="dots">{quest.learn.map((_, i) => <span key={i} className={i === lstep ? "on" : i < lstep ? "done" : ""} />)}</div>
             </div>
             <AutoControls k={`l${lstep}-${tick}`} />
           </div>
           <div className="row" style={{ marginTop: 12 }}>
-            {lstep > 0 && <button className="btn ghost" onClick={() => setLstep(lstep - 1)}>Peeche</button>}
+            {lstep > 0 && <button className="btn ghost" onClick={() => setLstep(lstep - 1)}>Back</button>}
             {(!auto || lstep + 1 === quest.learn.length) && (
               <button className={`btn ${lstep + 1 === quest.learn.length ? "pulse-btn" : ""}`} style={{ flex: 1 }} onClick={() => { stop(); if (lstep + 1 < quest.learn.length) setLstep(lstep + 1); else setStep(guidedGame ? "guided" : "game"); }}>
-                {lstep + 1 < quest.learn.length ? "Aage" : "Ab tum karo!"}
+                {lstep + 1 < quest.learn.length ? "Next" : "Now you try!"}
               </button>
             )}
           </div>
@@ -286,7 +286,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
           <div className="learnhead">
             <MooshakArt size={44} mood="happy" />
             <div>
-              <div className="eyebrow">Mere saath karo</div>
+              <div className="eyebrow">Try it with me</div>
               <div style={{ fontWeight: 900, fontSize: 17 }}>{quest.power.name}</div>
             </div>
           </div>
@@ -294,7 +294,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
           {quest.talk && (
             <div className="papa" style={{ marginTop: 14 }}>
               <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="14" cy="13" r="7" fill="#8d6e63" /><path d="M3 36 Q14 18 25 36 Z" fill="#2f6fd6" /><circle cx="29" cy="19" r="5" fill="#f4b183" /><path d="M21 37 Q29 24 37 37 Z" fill="#f28c28" /></svg>
-              <div style={{ fontSize: 15, fontWeight: 700 }}><b>Papa ke saath:</b> {quest.talk}</div>
+              <div style={{ fontSize: 15, fontWeight: 700 }}><b>With Papa:</b> {quest.talk}</div>
             </div>
           )}
 
@@ -303,7 +303,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
 
       {step === "game" && (
         <div>
-          <p className="center" style={{ margin: "4px 0" }}><span className="pill">Ab tumhari baari! · {quest.gameName}</span></p>
+          <p className="center" style={{ margin: "4px 0" }}><span className="pill">You do it! · {quest.gameName}</span></p>
           <GamePlayer game={mainGame} onDone={afterGame} />
         </div>
       )}
@@ -314,7 +314,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             <div className="row" style={{ gap: 10 }}>
               <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><rect x="12" y="4" width="24" height="40" rx="5" fill="#2b2118" /><rect x="15" y="9" width="18" height="28" rx="2" fill="#9fd4ff" /><path d="M6 6 L42 42" stroke="#d64545" strokeWidth="5" strokeLinecap="round" /></svg>
               <div>
-                <p className="title" style={{ fontSize: 20 }}>Phone neeche rakho!</p>
+                <p className="title" style={{ fontSize: 20 }}>Phone down!</p>
                 <p style={{ margin: 0, fontWeight: 800, color: "#c96a10" }}>{quest.physical.title}</p>
               </div>
             </div>
@@ -323,7 +323,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             </ol>
           </div>
           <div className="center" style={{ marginTop: 16 }}>
-            <button className="btn" onClick={() => setStep(quest.mistake ? "mistake" : "easy")}>Khel liya!</button>
+            <button className="btn" onClick={() => setStep(quest.mistake ? "mistake" : "easy")}>We played it!</button>
           </div>
         </div>
       )}
@@ -354,7 +354,7 @@ function Confetti() {
 }
 
 function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number; total: number; error?: string } | null }) {
-  if (!reward) return <p className="big center">Stars gin rahe hain...</p>;
+  if (!reward) return <p className="big center">Counting your stars...</p>;
   const before = reward.total >= 0 ? reward.total - reward.stars : -1;
   const newCard = before >= 0 && Math.floor(reward.total / STARS_PER_CARD) > Math.floor(before / STARS_PER_CARD) ? CARDS[Math.min(Math.floor(reward.total / STARS_PER_CARD) - 1, CARDS.length - 1)] : null;
   const arc = ARCS.find((a) => a.days[1] === quest.day);
@@ -363,11 +363,11 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
     <div className="center fade-in" style={{ position: "relative" }}>
       <Confetti />
       <MooshakArt size={96} mood="excited" />
-      <p className="big" style={{ margin: "4px 0" }}>Game khatam! Shabaash!</p>
+      <p className="big" style={{ margin: "4px 0" }}>Quest complete!</p>
       <div className="power-chip pop" style={{ margin: "10px auto" }}>
         <span className="power-ico">⚡</span>
         <div style={{ textAlign: "left" }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: "#8a5a1a", textTransform: "uppercase", letterSpacing: ".05em" }}>Nayi power!</div>
+          <div style={{ fontSize: 12, fontWeight: 800, color: "#8a5a1a", textTransform: "uppercase", letterSpacing: ".05em" }}>New power!</div>
           <div style={{ fontWeight: 900 }}>{quest.power.name}</div>
           <div style={{ fontSize: 13, color: "#7a6a5a" }}>{quest.power.desc}</div>
         </div>
@@ -377,10 +377,10 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
           <div key={k} className="pop" onAnimationStart={() => sfx.star()} style={{ animationDelay: `${0.4 + k * 0.2}s`, animationFillMode: "both" }}><ItemArt item="star" size={50} /></div>
         ))}
       </div>
-      <p className="panel-text" style={{ margin: 0 }}>+{reward.stars} stars{reward.total >= 0 ? ` · ${reward.total} jar mein` : ""}</p>
+      <p className="panel-text" style={{ margin: 0 }}>+{reward.stars} stars{reward.total >= 0 ? ` · ${reward.total} in your jar` : ""}</p>
       {newCard && (
         <div className="card pop" style={{ margin: "16px auto", maxWidth: 280 }}>
-          <p className="title">Naya hero card!</p>
+          <p className="title">New hero card!</p>
           <div className="row" style={{ justifyContent: "center", margin: 12 }}><CardPortrait name={newCard.name} color={newCard.color} size={96} /></div>
           <p className="big" style={{ margin: 0 }}>{newCard.name}</p>
         </div>
@@ -388,14 +388,14 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
       {arc && (
         <div className="card pop" style={{ margin: "16px auto", maxWidth: 320, borderColor: "#f2c230", background: "#fffbea" }}>
           <ItemArt item="modak" size={60} color="#f2c230" />
-          <p className="title">Trophy mili: {arc.trophy}!</p>
-          <p className="muted" style={{ margin: 0 }}>Tumne {arc.title} poora kar liya!</p>
+          <p className="title">Trophy: {arc.trophy}!</p>
+          <p className="muted" style={{ margin: 0 }}>You finished {arc.title}.</p>
         </div>
       )}
       <p className="muted" style={{ fontWeight: 800 }}>{quest.teaser}</p>
       {reward.error && <p className="muted" style={{ fontSize: 13 }}>Stars not saved (offline?). Papa can add them in Admin.</p>}
       <div className="row" style={{ justifyContent: "center", marginTop: 12 }}>
-        <Link href="/" className="btn" style={{ textDecoration: "none" }}>Map par chalo</Link>
+        <Link href="/" className="btn" style={{ textDecoration: "none" }}>Back to the map</Link>
       </div>
       {next && <p className="muted" style={{ fontSize: 12, marginTop: 16 }}>Papa: log today&apos;s session in Admin (1 minute).</p>}
     </div>
