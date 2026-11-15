@@ -57,6 +57,12 @@ export async function POST(req: Request) {
     return Response.json({ ok: true });
   }
 
+  if (b.action === "resetAll") {
+    if (b.confirm !== "RESET") return Response.json({ error: "type RESET to confirm" }, { status: 400 });
+    await sql`TRUNCATE TABLE rewards, quest_completions, logs, checks, skill_levels, skill_level_history RESTART IDENTITY`;
+    return Response.json({ ok: true });
+  }
+
   if (b.action === "deleteLog") {
     await sql`DELETE FROM logs WHERE id = ${Number(b.id)}`;
     return Response.json({ ok: true });

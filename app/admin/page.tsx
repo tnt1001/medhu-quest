@@ -310,6 +310,15 @@ function RewardsTab({ data, reload }: { data: Data; reload: () => void }) {
         </tbody>
       </table>
       <p className="muted" style={{ fontSize: 13 }}>Stars are never taken away.</p>
+      <h2>Start over</h2>
+      <p className="muted" style={{ fontSize: 13 }}>Deletes all stars, finished games, logs, checks and skill levels. This cannot be undone.</p>
+      <button className="btn small ghost" onClick={async () => {
+        const c = prompt("Type RESET to delete all progress");
+        if (c !== "RESET") return;
+        await post({ action: "resetAll", confirm: "RESET" });
+        try { localStorage.removeItem("medhu-check-draft"); } catch {}
+        reload();
+      }}>Reset all progress</button>
     </div>
   );
 }
