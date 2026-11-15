@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { CHECK_ITEMS, CHECK_STRANDS, LEVELS, SKILLS, STRANDS, type Strand } from "@/content/skills";
 import { CARDS, QUESTS, STARS_PER_CARD } from "@/content/quests";
 import { say, ttsUrl } from "@/lib/audio";
+import { P } from "@/lib/phrases";
 
 interface Log { id: number; log_date: string; quest_day: number | null; skill_id: string; game: string | null; tries: number; correct: number; method: number | null; engagement: number | null; note: string | null }
 interface Check { id: number; check_date: string; label: string; scores: number[]; total: number }
@@ -371,8 +372,8 @@ function AudioTab() {
       <h2>Voices (ElevenLabs)</h2>
       <p>Status: {configured === null ? "checking..." : configured ? "API key set - AI voices on" : "No API key yet - the app uses the phone's built-in voice"}</p>
       <div className="row" style={{ flexWrap: "wrap" }}>
-        <button className="btn small" onClick={() => say("Ganesha's birthday feast is in 2 weeks! Ganesha wants 100 modaks for all his friends.")}>Test narrator</button>
-        <button className="btn small ghost" onClick={() => say("Thank you, Medhu! You fixed my mistake!", "mooshak")}>Test Mooshak</button>
+        <button className="btn small" onClick={() => say(QUESTS[0].story[1].t)}>Test narrator</button>
+        <button className="btn small ghost" onClick={() => say(P.mooshakThanks, "mooshak")}>Test Mooshak</button>
         <button className="btn small ghost" onClick={() => say("five... पाँच")}>Test number</button>
       </div>
       <h2>Diagnostics</h2>

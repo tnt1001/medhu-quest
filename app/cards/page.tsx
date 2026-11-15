@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ItemArt } from "@/components/Art";
 import { CardPortrait } from "@/components/Cast";
-import { CARDS, QUESTS, STARS_PER_CARD } from "@/content/quests";
+import { CARDS, QUESTS, STARS_PER_CARD, displayName } from "@/content/quests";
 
 export default function Cards() {
   const [stars, setStars] = useState(0);
@@ -45,7 +45,7 @@ export default function Cards() {
               <div className="row" style={{ justifyContent: "center" }}>
                 {got ? <CardPortrait name={c.name} color={c.color} size={64} /> : <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#eadfcf", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, color: "#7a6a5a" }}>?</div>}
               </div>
-              <div style={{ fontWeight: 800, fontSize: 13, marginTop: 6 }}>{got ? c.name : `${(k + 1) * STARS_PER_CARD} stars`}</div>
+              <div style={{ fontWeight: 800, fontSize: 13, marginTop: 6 }}>{got ? displayName(c.name) : `${(k + 1) * STARS_PER_CARD} stars`}</div>
               <div className="muted" style={{ fontSize: 11 }}>{got ? c.world : ""}</div>
             </div>
           );

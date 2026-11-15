@@ -11,7 +11,7 @@ import { warmupFor } from "@/lib/warmup";
 import type { Result } from "@/components/games/common";
 import MuteToggle from "@/components/MuteToggle";
 import MusicToggle from "@/components/MusicToggle";
-import { ARCS, CARDS, QUESTS, STARS_PER_CARD, type Quest } from "@/content/quests";
+import { ARCS, CARDS, QUESTS, STARS_PER_CARD, displayName, type Quest } from "@/content/quests";
 import { SKILLS } from "@/content/skills";
 import { narrate, preload, say, sfx, sleep, stop } from "@/lib/audio";
 import type { Demo } from "@/content/quests";
@@ -198,7 +198,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             <h1 className="big" style={{ margin: "4px 0 10px" }}>{quest.title}</h1>
             <div className="row" style={{ justifyContent: "center", flexWrap: "wrap", gap: 10 }}>
               {quest.costars.map((c) => (
-                <div key={c} className="center" style={{ width: 74 }}><div className="row" style={{ justifyContent: "center" }}><Avatar name={c} size={52} /></div><b style={{ fontSize: 12, display: "block", marginTop: 4 }}>{c}</b></div>
+                <div key={c} className="center" style={{ width: 84 }}><div className="row" style={{ justifyContent: "center" }}><Avatar name={c} size={52} /></div><b style={{ fontSize: 12, display: "block", marginTop: 4 }}>{displayName(c)}</b></div>
               ))}
             </div>
             <div className="power-chip" style={{ marginTop: 14 }}>
@@ -382,7 +382,7 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
         <div className="card pop" style={{ margin: "16px auto", maxWidth: 280 }}>
           <p className="title">New hero card!</p>
           <div className="row" style={{ justifyContent: "center", margin: 12 }}><CardPortrait name={newCard.name} color={newCard.color} size={96} /></div>
-          <p className="big" style={{ margin: 0 }}>{newCard.name}</p>
+          <p className="big" style={{ margin: 0 }}>{displayName(newCard.name)}</p>
         </div>
       )}
       {arc && (

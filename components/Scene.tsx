@@ -1,4 +1,4 @@
-import { GaneshaArt, MooshakArt, SpeedLines, Toran, WebArt } from "@/components/Cast";
+import { GaneshaArt, KaaluArt, MooshakArt, SpeedLines, Toran, WebArt } from "@/components/Cast";
 import { ItemArt } from "@/components/Art";
 import type { Scene as SceneSpec } from "@/content/quests";
 
@@ -87,6 +87,11 @@ export function SceneView({ scene, height = "var(--scene-h)" }: { scene: SceneSp
       )}
       {scene.big && (
         <div className="pop" style={{ position: "absolute", left: "50%", top: "10%", transform: "translateX(-50%)", fontSize: 46, zIndex: 2, background: "rgba(255,255,255,.85)", padding: "2px 16px", borderRadius: 20, fontWeight: 900, color: "#f28c28", textShadow: "0 4px 0 white, 0 0 0 white" }}>{scene.big}</div>
+      )}
+      {scene.kaalu && (
+        <div className="kaalu-fly" style={{ position: "absolute", right: "6%", top: "8%", zIndex: 3 }}>
+          <KaaluArt size={78} />
+        </div>
       )}
       {cast.includes("ganesha") && (
         <div style={{ position: "absolute", left: cast.length > 1 || solo ? "2%" : "50%", bottom: "4%", transform: cast.length > 1 || solo ? "none" : "translateX(-50%)" }}>

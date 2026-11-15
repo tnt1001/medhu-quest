@@ -45,7 +45,7 @@ export function MooshakArt({ size = 90, mood = "happy" }: { size?: number; mood?
 
 export function GaneshaArt({ size = 150, holding = true }: { size?: number; holding?: boolean }) {
   return (
-    <svg width={size} height={size * 1.1} viewBox="0 0 140 154" aria-label="Ganesha">
+    <svg width={size} height={size * 1.1} viewBox="0 0 140 154" aria-label="Lord Ganesha">
       <ellipse cx="70" cy="148" rx="44" ry="5" fill="rgba(0,0,0,.12)" />
       {/* body and dhoti */}
       <ellipse cx="70" cy="112" rx="40" ry="34" fill="#f7a7a0" />
@@ -133,4 +133,25 @@ export function Toran() {
 export function CardPortrait({ name, color, size = 90 }: { name: string; color: string; size?: number }) {
   void color;
   return <Avatar name={name} size={size} />;
+}
+
+// Kaalu, the cheeky crow who keeps trying to steal the modaks (an original character).
+export function KaaluArt({ size = 80 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-label="Kaalu the crow">
+      <path className="flap" d="M40 50 Q10 30 4 52 Q22 50 34 62 Z" fill="#3a3f4b" />
+      <ellipse cx="52" cy="60" rx="26" ry="20" fill="#2b2f38" />
+      <path d="M74 64 L96 58 L92 72 Z" fill="#2b2f38" />
+      <circle cx="40" cy="38" r="17" fill="#2b2f38" />
+      <path d="M22 38 L6 44 L22 46 Z" fill="#f2a516" />
+      <circle cx="36" cy="34" r="6" fill="white" />
+      <circle cx="34" cy="34" r="3" fill="#111" />
+      <circle cx="33" cy="33" r="1" fill="white" />
+      <path d="M28 25 L42 29" stroke="#111" strokeWidth="3" strokeLinecap="round" />
+      <path d="M30 20 Q40 6 52 20 Z" fill="#d64545" />
+      <circle cx="41" cy="9" r="3" fill="#f2c230" />
+      <path d="M46 78 L44 90 M56 78 L58 90" stroke="#f2a516" strokeWidth="3" strokeLinecap="round" />
+      <path className="flap" d="M58 52 Q80 30 92 44 Q76 50 66 64 Z" fill="#3a3f4b" />
+    </svg>
+  );
 }

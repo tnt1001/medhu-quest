@@ -207,3 +207,8 @@ table.t th { font-size: 12px; text-transform: uppercase; letter-spacing: .03em; 
 .wave i { display: block; width: 4px; height: 6px; border-radius: 2px; background: var(--saffron); animation: wave 0.9s ease-in-out infinite; }
 .wave i:nth-child(2) { animation-delay: .15s; } .wave i:nth-child(3) { animation-delay: .3s; } .wave i:nth-child(4) { animation-delay: .45s; }
 @keyframes wave { 50% { height: 16px; } }
+
+.kaalu-fly { animation: kaalu 2.6s ease-in-out infinite; }
+@keyframes kaalu { 0%, 100% { transform: translate(0, 0) rotate(-4deg); } 50% { transform: translate(-10px, 8px) rotate(4deg); } }
+.flap { transform-origin: 50% 60%; animation: flap .35s ease-in-out infinite alternate; }
+@keyframes flap { to { transform: scaleY(.55); } }
