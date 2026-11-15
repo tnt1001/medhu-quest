@@ -7,8 +7,9 @@ import { P, phraseId, type Voice } from "@/lib/phrases";
 let el: HTMLAudioElement | null = null;
 let unlocked = false;
 let aiAvailable = false;
+let aiTag = "v0";
 if (typeof window !== "undefined") {
-  fetch("/api/tts?status=1", { cache: "no-store" }).then((r) => r.json()).then((d) => { aiAvailable = !!d.configured; }).catch(() => {});
+  fetch("/api/tts?status=1", { cache: "no-store" }).then((r) => r.json()).then((d) => { aiAvailable = !!d.configured; if (d.tag) aiTag = d.tag; }).catch(() => {});
 }
 let ctx: AudioContext | null = null;
 
@@ -128,7 +129,7 @@ export async function narrate(text: string, voice: Voice = "narrator") {
   if (left > 0) await sleep(left);
 }
 
-export const ttsUrl = (text: string, voice: Voice = "narrator") => `/api/audio/${voice}/${phraseId(text, voice)}.mp3`;
+export const ttsUrl = (text: string, voice: Voice = "narrator") => `/api/audio/${aiTag}/${voice}/${phraseId(text, voice)}.mp3`;
 
 // Speak a line with the ElevenLabs voice (cached on the server); falls back to the phone's voice.
 export function say(text: string, voice: Voice = "narrator"): Promise<void> {

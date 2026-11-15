@@ -1,6 +1,6 @@
 import { allPhrases } from "@/lib/phrases";
 import { isAdmin } from "@/lib/auth";
-import { apiKey, diagnose } from "@/lib/tts";
+import { apiKey, diagnose, voiceTag } from "@/lib/tts";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 26;
@@ -15,5 +15,5 @@ export async function GET(req: Request) {
     return Response.json({ phrases: allPhrases() }, { headers: NO_STORE });
   }
   if (url.searchParams.get("diag") === "1") return diagnose();
-  return Response.json({ configured: Boolean(apiKey()) }, { headers: NO_STORE });
+  return Response.json({ configured: Boolean(apiKey()), tag: voiceTag() }, { headers: NO_STORE });
 }

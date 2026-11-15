@@ -4,8 +4,8 @@ import { audioFor } from "@/lib/tts";
 export const dynamic = "force-dynamic";
 export const maxDuration = 26;
 
-// GET /api/audio/narrator/1a2b3c4d - one URL per line, so the CDN caches each line separately.
-export async function GET(_req: Request, { params }: { params: Promise<{ voice: string; id: string }> }) {
+// GET /api/audio/<voice tag>/narrator/1a2b3c4d.mp3 - one URL per line and voice version, so caches never serve a stale clip.
+export async function GET(_req: Request, { params }: { params: Promise<{ tag: string; voice: string; id: string }> }) {
   const { voice, id } = await params;
   const v = (voice === "mooshak" ? "mooshak" : "narrator") as Voice;
   const p = phraseById(id.replace(/\.mp3$/, ""));

@@ -146,3 +146,9 @@ export async function diagnose() {
   }
   return Response.json(out, { headers: { "Cache-Control": "no-store" } });
 }
+
+// Short tag for the current voices + model. It goes into every audio URL, so when a voice
+// changes the URLs change too and no phone keeps playing an old cached clip.
+export function voiceTag() {
+  return createHash("sha256").update(`${MODEL}|${voiceId("narrator")}|${voiceId("mooshak")}|${JSON.stringify(settings("narrator"))}|${JSON.stringify(settings("mooshak"))}`).digest("hex").slice(0, 8);
+}
