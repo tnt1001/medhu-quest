@@ -60,3 +60,20 @@ export function isAllowed(text: string, voice: Voice) {
   if (!cache) cache = new Set(allPhrases().map((p) => `${p.voice}|${p.text}`));
   return cache.has(`${voice}|${text}`);
 }
+
+// Stable short id for a line, used in the audio URL so each line gets its own cached file.
+export function phraseId(text: string, voice: Voice) {
+  let h = 0x811c9dc5;
+  const str = `${voice}|${text}`;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+}
+
+let byId: Map<string, { text: string; voice: Voice }> | null = null;
+export function phraseById(id: string) {
+  if (!byId) byId = new Map(allPhrases().map((p) => [phraseId(p.text, p.voice), p]));
+  return byId.get(id) ?? null;
+}

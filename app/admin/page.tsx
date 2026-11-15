@@ -350,10 +350,10 @@ function AudioTab() {
   const [progress, setProgress] = useState<{ done: number; total: number; failed: number } | null>(null);
   const [lastError, setLastError] = useState("");
   const [diag, setDiag] = useState("");
-  useEffect(() => { fetch("/api/tts?status=1").then((r) => r.json()).then((d) => setConfigured(d.configured)).catch(() => setConfigured(false)); }, []);
+  useEffect(() => { fetch("/api/tts?status=1", { cache: "no-store" }).then((r) => r.json()).then((d) => setConfigured(d.configured)).catch(() => setConfigured(false)); }, []);
 
   const warm = async () => {
-    const r = await fetch("/api/tts?list=1");
+    const r = await fetch("/api/tts?list=1", { cache: "no-store" });
     if (!r.ok) return setLastError("Could not load phrase list");
     const { phrases } = (await r.json()) as { phrases: { text: string; voice: "narrator" | "mooshak" }[] };
     let done = 0, failed = 0;
@@ -376,7 +376,7 @@ function AudioTab() {
         <button className="btn small ghost" onClick={() => say("five... पाँच")}>Test number</button>
       </div>
       <h2>Diagnostics</h2>
-      <button className="btn small ghost" onClick={async () => { setDiag("Checking (up to 30s)..."); const r = await fetch("/api/tts?diag=1"); setDiag(r.ok ? JSON.stringify(await r.json(), null, 2) : `HTTP ${r.status}`); }}>Run voice check</button>
+      <button className="btn small ghost" onClick={async () => { setDiag("Checking (up to 30s)..."); const r = await fetch("/api/tts?diag=1", { cache: "no-store" }); setDiag(r.ok ? JSON.stringify(await r.json(), null, 2) : `HTTP ${r.status}`); }}>Run voice check</button>
       {diag && <pre className="card" style={{ whiteSpace: "pre-wrap", fontSize: 13, marginTop: 10 }}>{diag}</pre>}
       <h2>Pre-generate all audio</h2>
       <p className="muted" style={{ fontSize: 14 }}>Run once after adding the key (and after new content), so every line plays instantly. Each line is generated once and cached.</p>
