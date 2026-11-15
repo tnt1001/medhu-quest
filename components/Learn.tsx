@@ -40,7 +40,7 @@ export function CountDemo({ item, n, k }: { item: Item; n: number; k: number }) 
           </div>
         ))}
       </div>
-      {t > n - 1 ? <BigNum n={n} label={`The last number is ${n}. So there are ${n}!`} /> : <div style={{ height: 82 }} />}
+      {t > n - 1 ? <BigNum n={n} label={`Last number ${n} hai. Toh ${n} hain!`} /> : <div style={{ height: 82 }} />}
     </div>
   );
 }
@@ -60,7 +60,7 @@ export function GlanceDemo({ item, n, k }: { item: Item; n: number; k: number })
           <div key={i} style={{ position: "absolute", left: `${x}%`, top: `${y}%`, transform: "translate(-50%,-50%)" }}><ItemArt item={item} size={46} /></div>
         ))}
       </div>
-      {t >= 2 ? <BigNum n={n} label={`One look: ${n}!`} /> : <div style={{ height: 82 }} />}
+      {t >= 2 ? <BigNum n={n} label={`Ek nazar: ${n}!`} /> : <div style={{ height: 82 }} />}
     </div>
   );
 }
@@ -81,7 +81,7 @@ export function GiveNDemo({ item, n, pile, k }: { item: Item; n: number; pile: n
       </div>
       {t > n ? (
         <div className="pop center" style={{ marginTop: 10 }}>
-          <span style={{ display: "inline-block", background: "#d64545", color: "white", fontWeight: 900, fontSize: 26, padding: "8px 22px", borderRadius: 14, border: "4px solid white", boxShadow: "0 0 0 3px #d64545" }}>STOP at {n}!</span>
+          <span style={{ display: "inline-block", background: "#d64545", color: "white", fontWeight: 900, fontSize: 26, padding: "8px 22px", borderRadius: 14, border: "4px solid white", boxShadow: "0 0 0 3px #d64545" }}>{n} par RUKO!</span>
         </div>
       ) : <div style={{ height: 62 }} />}
     </div>
@@ -99,7 +99,7 @@ export function Frame5Demo({ n, k }: { n: number; k: number }) {
           </div>
         ))}
       </div>
-      {t >= 5 ? <BigNum n={n} label={n === 5 ? "Full tray = 5!" : `${n} full, ${5 - n} empty → ${n}`} /> : <div style={{ height: 82 }} />}
+      {t >= 5 ? <BigNum n={n} label={n === 5 ? "Bhari tray = 5!" : `${n} bhare, ${5 - n} khaali → ${n}`} /> : <div style={{ height: 82 }} />}
     </div>
   );
 }
@@ -120,7 +120,7 @@ export function ConserveDemo({ item, n, k }: { item: Item; n: number; k: number 
           return <div key={i} style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%,-50%)", transition: "all 1s cubic-bezier(.3,1.5,.5,1)" }}><ItemArt item={item} size={40} /></div>;
         })}
       </div>
-      {t >= 2 ? <BigNum n={n} label={`Still ${n}! Nothing added, nothing taken.`} /> : <div className="center muted" style={{ height: 82, paddingTop: 20, fontWeight: 800 }}>{spread ? "Whoosh! Spreading out..." : `${n} in a row`}</div>}
+      {t >= 2 ? <BigNum n={n} label={`Ab bhi ${n}! Na joda, na nikaala.`} /> : <div className="center muted" style={{ height: 82, paddingTop: 20, fontWeight: 800 }}>{spread ? "Whoosh! Bikhar rahe hain..." : `${n} ek line mein`}</div>}
     </div>
   );
 }
@@ -150,7 +150,7 @@ export function MatchDemo({ item, a, b, k }: { item: Item; a: number; b: number;
         {cell(a, 0)}
         {cell(b, 1)}
       </div>
-      {t > pairs ? <div className="pop" style={{ fontWeight: 900, fontSize: 19, color: "#c96a10", marginTop: 8 }}>{Math.abs(a - b)} extra, so the {a > b ? "top" : "bottom"} row has MORE ({Math.max(a, b)})</div> : <div style={{ height: 33 }} />}
+      {t > pairs ? <div className="pop" style={{ fontWeight: 900, fontSize: 19, color: "#c96a10", marginTop: 8 }}>{Math.abs(a - b)} extra, toh {a > b ? "upar" : "neeche"} wali line mein ZYADA ({Math.max(a, b)})</div> : <div style={{ height: 33 }} />}
     </div>
   );
 }
@@ -184,7 +184,7 @@ export function PatternDemo({ seq, k }: { seq: string[]; k: number }) {
           </div>
         ))}
       </div>
-      <p style={{ fontWeight: 800, color: "#c96a10", fontSize: 18 }}>Repeat part: {seq.slice(0, unit).join(", ")}</p>
+      <p style={{ fontWeight: 800, color: "#c96a10", fontSize: 18 }}>Repeat hissa: {seq.slice(0, unit).map((c) => ({ red: "laal", blue: "neela", yellow: "peela", green: "hara" } as Record<string, string>)[c] ?? c).join(", ")}</p>
     </div>
   );
 }
@@ -204,7 +204,7 @@ export function ShapeDemo({ shape, k }: { shape: "circle" | "triangle" | "square
         ))}
       </div>
       <p style={{ fontWeight: 900, fontSize: 22, margin: "6px 0 0", textTransform: "capitalize" }}>{shape}</p>
-      <p className="muted" style={{ fontWeight: 800, margin: 0 }}>{c.length === 0 ? "Round, no corners" : `${c.length} sides, ${c.length} corners`}</p>
+      <p className="muted" style={{ fontWeight: 800, margin: 0 }}>{c.length === 0 ? "Gol, koi kona nahi" : `${c.length} side, ${c.length} kone`}</p>
     </div>
   );
 }

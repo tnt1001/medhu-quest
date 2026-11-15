@@ -67,7 +67,7 @@ export function NumberChoices({ answer, seed, onAnswer, explain }: { answer: num
       {done && <div className="numword center pop">{numberWords(answer)}</div>}
       {!done && wrong.length > 0 && explain && (
         <div className="explain fade-in">
-          <div className="explain-title">Let&apos;s check together</div>
+          <div className="explain-title">Chalo saath mein check karte hain</div>
           {explain}
         </div>
       )}

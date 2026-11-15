@@ -37,7 +37,7 @@ function CountGame({ item, rounds, onDone }: { item: Item; rounds: number[]; onD
   return (
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
-      <p className="panel-text center">{allCounted ? "So... how many modaks?" : "Tap each one to count it!"}</p>
+      <p className="panel-text center">{allCounted ? "Toh... kitne modak hain?" : "Har modak ko touch karke gino!"}</p>
       <div className="stage" style={{ padding: 0 }}>
         <div style={{ position: "relative", width: "100%", height: "var(--stage-h)" }}>
           {pts.map((p, k) => {
@@ -111,15 +111,15 @@ function FlashGame({ item, layout, rounds, onDone }: { item: Item; layout: "scat
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
       <div className="stage">
-        {phase === "ready" && <button className="btn" onClick={go}>Ready? Look!</button>}
+        {phase === "ready" && <button className="btn" onClick={go}>Ready? Dekho!</button>}
         {phase === "show" && (layout === "dice" ? <Dice n={n} /> : layout === "frame5" ? <FivesFrame n={n} item={item} /> : <Scattered n={n} item={item} seed={i * 5 + n} />)}
-        {phase === "ask" && <p className="big center">How many did you see?</p>}
+        {phase === "ask" && <p className="big center">Kitne dekhe?</p>}
       </div>
       {phase === "ask" && (
         <>
           <NumberChoices key={i} answer={n} seed={i + 5} onAnswer={next} explain={<CountDemo item={item} n={n} k={i + 50} />} />
           <div className="center" style={{ marginTop: 10 }}>
-            <button className="btn ghost small" onClick={go}>Show me again</button>
+            <button className="btn ghost small" onClick={go}>Phir se dikhao</button>
           </div>
         </>
       )}
@@ -140,7 +140,7 @@ function GiveNGame({ item, rounds, onDone, guided }: { item: Item; rounds: numbe
   return (
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
-      <p className="big center">&quot;I want <span style={{ color: "#f28c28" }}>{n}</span> modaks, please!&quot;</p>
+      <p className="big center">&quot;Mujhe <span style={{ color: "#f28c28" }}>{n}</span> modak chahiye!&quot;</p>
       <div className="stage" style={{ minHeight: 0, padding: 10, gap: 4 }}>
         {Array.from({ length: pile }, (_, k) => (
           <button key={k} onClick={() => { if (state !== "right") { sfx.drop(); setPlate(plate + 1); } }} style={{ border: 0, background: "none", padding: 0, cursor: "pointer" }}>
@@ -148,7 +148,7 @@ function GiveNGame({ item, rounds, onDone, guided }: { item: Item; rounds: numbe
           </button>
         ))}
       </div>
-      <p className="center muted" style={{ margin: "6px 0 4px", fontWeight: 700, fontSize: 14 }}>{guided ? <>On the plate: <b style={{ color: "#f28c28", fontSize: 18 }}>{plate}</b> - stop at {n}!</> : "Plate (tap to put back)"}</p>
+      <p className="center muted" style={{ margin: "6px 0 4px", fontWeight: 700, fontSize: 14 }}>{guided ? <>Plate par: <b style={{ color: "#f28c28", fontSize: 18 }}>{plate}</b> - {n} par ruko!</> : "Plate (wapas lene ke liye tap karo)"}</p>
       <div className="stage" style={{ minHeight: 76, padding: 8, gap: 4, borderRadius: 999, background: "#fdf2e2", borderColor: state === "right" ? "#2e9d5b" : state === "wrong" ? "#d64545" : undefined }}>
         {Array.from({ length: plate }, (_, k) => (
           <button key={k} onClick={() => { if (state !== "right") { sfx.pop(); setPlate(plate - 1); } }} style={{ border: 0, background: "none", padding: 0, cursor: "pointer" }}>
@@ -158,7 +158,7 @@ function GiveNGame({ item, rounds, onDone, guided }: { item: Item; rounds: numbe
       </div>
       <div className="center" style={{ marginTop: 10 }}>
         {state === "right" ? (
-          <p className="big pop" style={{ color: "#2e9d5b" }}>Exactly {n}! Shabaash!</p>
+          <p className="big pop" style={{ color: "#2e9d5b" }}>Ekdum {n}! Shabaash!</p>
         ) : (
           <button
             className="btn"
@@ -177,10 +177,10 @@ function GiveNGame({ item, rounds, onDone, guided }: { item: Item; rounds: numbe
               }
             }}
           >
-            Here you go!
+            Yeh lo!
           </button>
         )}
-        {state === "wrong" && <p className="muted" style={{ fontWeight: 700 }}>{plate > n ? "Too many! Take some back." : "Not enough! Add some more."}</p>}
+        {state === "wrong" && <p className="muted" style={{ fontWeight: 700 }}>{plate > n ? "Zyada ho gaye! Kuch wapas rakho." : "Kam hain! Aur daalo."}</p>}
       </div>
     </div>
   );
@@ -196,7 +196,7 @@ function ConserveGame({ item, rounds, onDone }: { item: Item; rounds: number[]; 
   return (
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
-      <p className="panel-text center">{phase === "row" ? `Count them with Papa: there are ${n}.` : phase === "shake" ? "Whoooosh! The web shakes!" : "Now how many modaks are there?"}</p>
+      <p className="panel-text center">{phase === "row" ? `Papa ke saath gino: ${n} modak hain.` : phase === "shake" ? "Whoooosh! Jaal hil gaya!" : "Ab kitne modak hain?"}</p>
       <div className="stage" style={{ padding: 0 }}>
         <div style={{ position: "relative", width: "100%", height: "var(--stage-h)" }}>
           {Array.from({ length: n }, (_, k) => {
@@ -212,7 +212,7 @@ function ConserveGame({ item, rounds, onDone }: { item: Item; rounds: number[]; 
       </div>
       {phase === "row" && (
         <div className="center" style={{ marginTop: 14 }}>
-          <button className="btn" onClick={() => { setPhase("shake"); sfx.whoosh(); say(P.shakeWeb); setTimeout(() => setPhase("ask"), 1200); }}>Shake the web!</button>
+          <button className="btn" onClick={() => { setPhase("shake"); sfx.whoosh(); say(P.shakeWeb); setTimeout(() => setPhase("ask"), 1200); }}>Jaal hilao!</button>
         </div>
       )}
       {phase === "ask" && <NumberChoices key={i} answer={n} seed={i + 9} onAnswer={next} explain={<ConserveDemo item={item} n={n} k={i} />} />}
@@ -253,14 +253,14 @@ function CompareGame({ item, rounds, onDone }: { item: Item; rounds: [number, nu
   return (
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
-      <p className="big center">Which plate has MORE?</p>
+      <p className="big center">Kis plate mein ZYADA hain?</p>
       <div className="row" style={{ alignItems: "stretch" }}>
         <Plate n={a} side={0} />
         <Plate n={b} side={1} />
       </div>
-      {picked === answer && <p className="big center pop" style={{ color: "#2e9d5b" }}>{Math.max(a, b)} is more than {Math.min(a, b)}!</p>}
+      {picked === answer && <p className="big center pop" style={{ color: "#2e9d5b" }}>{Math.max(a, b)} zyada hai {Math.min(a, b)} se!</p>}
       {picked !== null && picked !== answer && (
-        <div className="explain fade-in"><div className="explain-title">Let&apos;s pair them up</div><MatchDemo item={item} a={a} b={b} k={i} /></div>
+        <div className="explain fade-in"><div className="explain-title">Chalo jodi banate hain</div><MatchDemo item={item} a={a} b={b} k={i} /></div>
       )}
     </div>
   );
@@ -285,7 +285,7 @@ function PatternGame({ rounds, onDone }: { rounds: string[][]; onDone: Done }) {
   return (
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
-      <p className="big center">What comes next?</p>
+      <p className="big center">Aage kya aayega?</p>
       <div className="stage" style={{ gap: 2, minHeight: 120 }}>
         {seq.map((c, k) => <ItemArt key={k} item="diya" size={48} color={COLORS[c]} />)}
         <div style={{ width: 48, height: 48, border: "3px dashed #c9b79f", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800 }}>
@@ -312,7 +312,7 @@ function PatternGame({ rounds, onDone }: { rounds: string[][]; onDone: Done }) {
         ))}
       </div>
       {!done && wrong.length > 0 && (
-        <div className="explain fade-in"><div className="explain-title">Find the part that repeats</div><PatternDemo seq={seq} k={i} /></div>
+        <div className="explain fade-in"><div className="explain-title">Repeat hone wala hissa dhoondo</div><PatternDemo seq={seq} k={i} /></div>
       )}
     </div>
   );
@@ -336,8 +336,8 @@ function ShapesGame({ rounds, onDone }: { rounds: ShapeName[]; onDone: Done }) {
   return (
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
-      <p className="big center">Tap all the <span style={{ color: "#f28c28" }}>{target}s</span>!</p>
-      <p className="center muted" style={{ fontWeight: 700 }}>{found.length} of 3 found</p>
+      <p className="big center">Saare <span style={{ color: "#f28c28" }}>{target}</span> dhoondo!</p>
+      <p className="center muted" style={{ fontWeight: 700 }}>3 mein se {found.length} mile</p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
         {board.map(({ s, color }, k) => (
           <button
@@ -367,7 +367,7 @@ function ShapesGame({ rounds, onDone }: { rounds: ShapeName[]; onDone: Done }) {
         ))}
       </div>
       {misses > 0 && found.length < 3 && (
-        <div className="explain fade-in"><div className="explain-title">This is a {target}</div><ShapeDemo shape={target} k={misses} /></div>
+        <div className="explain fade-in"><div className="explain-title">Yeh hai {target}</div><ShapeDemo shape={target} k={misses} /></div>
       )}
     </div>
   );
@@ -378,8 +378,8 @@ function CheckGame({ items, onDone }: { items: number[]; onDone: Done }) {
   return (
     <div className="fade-in">
       <div className="card">
-        <p className="title">For Papa: run these with real objects</p>
-        <p className="muted">Score each 0 (can&apos;t), 1 (with help or slow count from 1), 2 (alone and quick). Enter scores in Admin, Checks.</p>
+        <p className="title">Papa ke liye: asli cheezon se karwao</p>
+        <p className="muted">Har ek ko score do: 0 (nahi hua), 1 (help se ya 1 se gin kar), 2 (khud se aur jaldi). Scores Admin mein Checks mein daalo.</p>
         <ol style={{ fontSize: 17, lineHeight: 1.5, paddingLeft: 20 }}>
           {items.map((n) => {
             const it = CHECK_ITEMS.find((c) => c.n === n)!;
@@ -388,20 +388,20 @@ function CheckGame({ items, onDone }: { items: number[]; onDone: Done }) {
         </ol>
       </div>
       <div className="center" style={{ marginTop: 16 }}>
-        <button className="btn" onClick={() => onDone({ tries: 0, correct: 0, triedAgain: false })}>We did the helper test!</button>
+        <button className="btn" onClick={() => onDone({ tries: 0, correct: 0, triedAgain: false })}>Helper test ho gaya!</button>
       </div>
     </div>
   );
 }
 
 const HINTS: Record<string, string> = {
-  count: "Touch each one once and count. The last number is the answer!",
-  flash: "Don't count - look at the shape they make!",
-  giveN: "Move one at a time and count. Stop at the number!",
-  conserve: "Remember the row. Did anyone add or take away?",
-  compare: "Look carefully, or pair them up!",
-  pattern: "Say the colours like a song. What comes next?",
-  shapes: "Count the corners to check!",
+  count: "Har ek ko ek baar touch karke gino. Last number hi answer hai!",
+  flash: "Gino mat - bas dekho woh kaisi shape banate hain!",
+  giveN: "Ek ek karke rakho aur gino. Number par ruk jao!",
+  conserve: "Line yaad karo. Kisi ne joda ya nikaala?",
+  compare: "Dhyaan se dekho, ya jodi banao!",
+  pattern: "Rangon ko gaane ki tarah bolo. Aage kya aayega?",
+  shapes: "Check karne ke liye kone gino!",
 };
 
 export function GamePlayer({ game, onDone, guided = false, companion = true }: { game: Game; onDone: Done; guided?: boolean; companion?: boolean }) {
@@ -413,7 +413,7 @@ export function GamePlayer({ game, onDone, guided = false, companion = true }: {
     const g = game.parts[part];
     body = (
       <div key={part}>
-        <p className="center" style={{ margin: "2px 0" }}><span className="pill">Challenge {part + 1} of {game.parts.length}</span></p>
+        <p className="center" style={{ margin: "2px 0" }}><span className="pill">Challenge {part + 1} / {game.parts.length}</span></p>
         <GamePlayer
           game={g}
           companion={false}
@@ -442,7 +442,7 @@ export function GamePlayer({ game, onDone, guided = false, companion = true }: {
     <div>
       {guided && hint && <div className="hintbar">💡 {hint}</div>}
       {body}
-      {companion && game.type !== "check" && <Companion hint={guided ? "Let's do it together!" : undefined} />}
+      {companion && game.type !== "check" && <Companion hint={guided ? "Chalo saath mein karte hain!" : undefined} />}
     </div>
   );
 }
@@ -465,24 +465,24 @@ export function MistakeRound({ item, shown, claim, onDone }: { item: Item; shown
     <div className="fade-in">
       <div className="row" style={{ justifyContent: "center" }}>
         <Mooshak size={84} mood="confused" />
-        <div className="card" style={{ fontSize: 20, fontWeight: 700 }}>&quot;I count <b>{claim}</b>!&quot;</div>
+        <div className="card" style={{ fontSize: 20, fontWeight: 700 }}>&quot;Maine gine... <b>{claim}</b>!&quot;</div>
       </div>
       <div className="stage" style={{ marginTop: 12 }}>
         <Scattered n={shown} item={item} seed={shown * 3 + 1} size={46} />
       </div>
       {phase === "judge" && (
         <div className="row" style={{ marginTop: 16 }}>
-          <button className="btn ghost" style={{ flex: 1 }} onClick={() => { setFixedFirst(false); sfx.wrong(); say(P.mooshakHmm, "mooshak"); }}>He&apos;s right</button>
-          <button className="btn" style={{ flex: 1 }} onClick={() => setPhase("fix")}>Oops, Mooshak!</button>
+          <button className="btn ghost" style={{ flex: 1 }} onClick={() => { setFixedFirst(false); sfx.wrong(); say(P.mooshakHmm, "mooshak"); }}>Sahi hai</button>
+          <button className="btn" style={{ flex: 1 }} onClick={() => setPhase("fix")}>Galat, Mooshak!</button>
         </div>
       )}
       {phase === "fix" && (
         <>
-          <p className="big center">How many really?</p>
+          <p className="big center">Asal mein kitne?</p>
           <NumberChoices answer={shown} seed={shown + 21} explain={<CountDemo item={item} n={shown} k={shown} />} onAnswer={() => { setPhase("done"); say(P.mooshakThanks, "mooshak"); setTimeout(() => onDone(fixedFirst), 1500); }} />
         </>
       )}
-      {phase === "done" && <p className="big center pop">Mooshak says: &quot;Thank you, Medhu!&quot;</p>}
+      {phase === "done" && <p className="big center pop">Mooshak: &quot;Thank you Medhu!&quot;</p>}
     </div>
   );
 }
@@ -491,7 +491,7 @@ export function EasyWin({ item, n, onDone }: { item: Item; n: number; onDone: ()
   useEffect(() => { say(P.easyOne); }, []);
   return (
     <div className="fade-in">
-      <p className="big center">One last easy one!</p>
+      <p className="big center">Ek aakhri, ekdum aasaan!</p>
       <div className="stage">
         <Scattered n={n} item={item} seed={n + 40} />
       </div>

@@ -48,7 +48,7 @@ export default function Home() {
           <Avatar name="Medhu" size={48} />
           <div>
             <h1 className="title" style={{ fontSize: 20 }}>Medhu&apos;s Quest</h1>
-            <div className="muted" style={{ fontSize: 12, fontWeight: 800 }}>Learn maths with Mooshak</div>
+            <div className="muted" style={{ fontSize: 12, fontWeight: 800 }}>Mooshak ke saath maths</div>
           </div>
         </div>
         <div className="row" style={{ gap: 6 }}>
@@ -69,7 +69,7 @@ export default function Home() {
           <div style={{ height: 10, background: "rgba(255,255,255,.35)", borderRadius: 99, overflow: "hidden" }}>
             <div style={{ width: `${pct}%`, height: "100%", background: "white" }} />
           </div>
-          <div style={{ fontSize: 12, marginTop: 6, fontWeight: 800, color: "#fff3dd" }}>{done.size} of {QUESTS.length} games · {toCard} ★ to next hero card</div>
+          <div style={{ fontSize: 12, marginTop: 6, fontWeight: 800, color: "#fff3dd" }}>{done.size} of {QUESTS.length} games · agle hero card tak {toCard} ★</div>
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export default function Home() {
           <Thumb q={next} h={150} />
           <div className="tile-body" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
             <div>
-              <div className="eyebrow">Game {next.day} · Play now</div>
+              <div className="eyebrow">Game {next.day} · Abhi khelo</div>
               <div style={{ fontWeight: 900, fontSize: 19 }}>{next.title}</div>
               <div style={{ fontSize: 13, fontWeight: 800, color: "#c96a10" }}>⚡ {next.power.name}</div>
               <div className="row" style={{ gap: 0, marginTop: 6 }}>{next.costars.map((c, i) => <div key={c} style={{ marginLeft: i ? -8 : 0 }}><Avatar name={c} size={30} /></div>)}</div>
@@ -88,7 +88,7 @@ export default function Home() {
         </Link>
       )}
 
-      <div className="eyebrow" style={{ margin: "18px 0 8px" }}>All games</div>
+      <div className="eyebrow" style={{ margin: "18px 0 8px" }}>Saare games</div>
       <div className="tiles">
         {QUESTS.map((q) => {
           const open = isOpen(q);
@@ -105,7 +105,7 @@ export default function Home() {
               <div className="tile-body">
                 <div style={{ fontWeight: 900, fontSize: 14, lineHeight: 1.2, color: open ? "#2b2118" : "#9a8a78" }}>{q.title}</div>
                 <div style={{ fontSize: 11, fontWeight: 800, color: finished ? "#1f7a43" : current ? "#c96a10" : "#b5a591", marginTop: 2 }}>
-                  {finished ? "Done · play again" : current ? "Play now!" : open ? "Open" : "Locked"}
+                  {finished ? "Ho gaya · phir khelo" : current ? "Abhi khelo!" : open ? "Khula hai" : "Locked"}
                 </div>
               </div>
             </>
@@ -118,19 +118,19 @@ export default function Home() {
         })}
       </div>
 
-      <div className="eyebrow" style={{ margin: "22px 0 8px" }}>Coming next</div>
+      <div className="eyebrow" style={{ margin: "22px 0 8px" }}>Aage aa raha hai</div>
       {ARCS.slice(1).map((a) => (
         <button key={a.id} className="arc-locked" onClick={() => setLocked({ ...QUESTS[QUESTS.length - 1], day: a.days[0], title: `Arc ${a.id}: ${a.title}` } as Quest)}>
           <Lock />
           <div style={{ textAlign: "left" }}>
             <div style={{ fontWeight: 900 }}>Arc {a.id}: {a.title}</div>
-            <div className="muted" style={{ fontSize: 12, fontWeight: 700 }}>{a.costars} · finish Arc {a.id - 1} to unlock</div>
+            <div className="muted" style={{ fontSize: 12, fontWeight: 700 }}>{a.costars} · Arc {a.id - 1} poora karke kholo</div>
           </div>
         </button>
       ))}
 
       <div className="row" style={{ justifyContent: "space-between", marginTop: 24 }}>
-        <Link href="/cards" className="btn ghost small" style={{ textDecoration: "none" }}>My powers & cards</Link>
+        <Link href="/cards" className="btn ghost small" style={{ textDecoration: "none" }}>Meri powers aur cards</Link>
         <Link href="/admin" className="muted" style={{ fontSize: 13 }}>Papa&apos;s admin</Link>
       </div>
 
