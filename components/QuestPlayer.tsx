@@ -15,7 +15,7 @@ import { ARCS, CARDS, QUESTS, STARS_PER_CARD, type Quest } from "@/content/quest
 import { SKILLS } from "@/content/skills";
 import { narrate, preload, say, sfx, sleep, stop } from "@/lib/audio";
 import type { Demo } from "@/content/quests";
-import { P } from "@/lib/phrases";
+import { P, clean } from "@/lib/phrases";
 
 type Step = "intro" | "warmup" | "story" | "learn" | "guided" | "game" | "physical" | "mistake" | "easy" | "reward";
 
@@ -59,7 +59,7 @@ function demoMs(d: Demo) {
   }
 }
 
-const GAP = 1500;
+const GAP = 600;
 
 export default function QuestPlayer({ quest }: { quest: Quest }) {
   const [step, setStep] = useState<Step>("intro");
@@ -100,7 +100,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
     (async () => {
       // Let the new card slide in, then read it; only move on once the reading has finished.
       setPhase("enter");
-      await sleep(350);
+      await sleep(200);
       if (cancelled) return;
       setPhase("speaking");
       const started = Date.now();
@@ -233,7 +233,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
         <div className="fade-in" key={`s${panel}`}>
           <div onClick={skip} style={{ cursor: "pointer" }}><SceneView scene={quest.story[panel].s} /></div>
           <div className="storycard">
-            <p className="panel-text" style={{ margin: 0 }}>{quest.story[panel].t}</p>
+            <p className="panel-text" style={{ margin: 0 }}>{clean(quest.story[panel].t)}</p>
             <div className="row spread" style={{ marginTop: 10 }}>
               <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚ Pause" : "▶ Play"}</button>
               <div className="dots">{quest.story.map((_, i) => <span key={i} className={i === panel ? "on" : i < panel ? "done" : ""} />)}</div>
@@ -262,7 +262,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
           </div>
           <div className="card demo-card" onClick={skip}><DemoView demo={quest.learn[lstep].demo} k={replay * 100 + lstep} /></div>
           <div className="storycard" style={{ marginTop: 10 }}>
-            <p className="panel-text" style={{ margin: 0 }}>{quest.learn[lstep].t}</p>
+            <p className="panel-text" style={{ margin: 0 }}>{clean(quest.learn[lstep].t)}</p>
             <div className="row spread" style={{ marginTop: 10 }}>
               <button className="speak" onClick={() => { setReplay(replay + 1); setTick(tick + 1); }}>↻ Show again</button>
               <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚" : "▶"}</button>
@@ -392,7 +392,7 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
           <p className="muted" style={{ margin: 0 }}>You finished {arc.title}.</p>
         </div>
       )}
-      <p className="muted" style={{ fontWeight: 800 }}>{quest.teaser}</p>
+      <p className="muted" style={{ fontWeight: 800 }}>{clean(quest.teaser)}</p>
       {reward.error && <p className="muted" style={{ fontSize: 13 }}>Stars not saved (offline?). Papa can add them in Admin.</p>}
       <div className="row" style={{ justifyContent: "center", marginTop: 12 }}>
         <Link href="/" className="btn" style={{ textDecoration: "none" }}>Back to the map</Link>

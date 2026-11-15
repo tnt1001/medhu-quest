@@ -1,6 +1,6 @@
 "use client";
 import { ENGLISH, HINDI, HINDI_DEV } from "@/content/skills";
-import { P, phraseId, type Voice } from "@/lib/phrases";
+import { P, clean, phraseId, type Voice } from "@/lib/phrases";
 
 // One shared <audio> element. Mobile browsers only allow playback after a tap,
 // so we "unlock" it on the first touch and reuse it for everything after.
@@ -91,7 +91,8 @@ function pickVoice(lang: string): SpeechSynthesisVoice | null {
   return [...pool].sort((x, y) => score(y) - score(x))[0];
 }
 
-function browserSpeak(text: string): Promise<void> {
+function browserSpeak(raw: string): Promise<void> {
+  const text = clean(raw);
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return sleep(readMs(text));
   const synth = window.speechSynthesis;
   synth.cancel();
@@ -117,7 +118,7 @@ function browserSpeak(text: string): Promise<void> {
 
 export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 // How long a grown-up takes to read a line aloud to a 4-year-old.
-export const readMs = (text: string) => Math.max(2200, text.split(/\s+/).length * 400);
+export const readMs = (text: string) => Math.max(2200, clean(text).split(/\s+/).length * 400);
 
 // Narrate a line and resolve when it has finished (or after a reading-time estimate when muted).
 export async function narrate(text: string, voice: Voice = "narrator") {

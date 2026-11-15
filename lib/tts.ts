@@ -1,8 +1,11 @@
 import { createHash } from "crypto";
 import { getStore } from "@netlify/blobs";
-import type { Voice } from "@/lib/phrases";
+import { clean, type Voice } from "@/lib/phrases";
 
-const MODEL = "eleven_multilingual_v2";
+// Eleven v3 understands emotion tags like [excited] and [whispers]. If it fails for a voice,
+// we fall back to multilingual v2 with the tags removed.
+const MODEL = "eleven_v3";
+const FALLBACK_MODEL = "eleven_multilingual_v2";
 
 export function voiceId(voice: Voice) {
   if (voice === "mooshak") return (process.env.ELEVENLABS_VOICE_MOOSHAK || process.env.ELEVENLABS_VOICE_NARRATOR || "EXAVITQu4vr4xnSDxMaL").trim();
@@ -10,9 +13,14 @@ export function voiceId(voice: Voice) {
 }
 
 export function settings(voice: Voice) {
+  // v3 only takes stability: 0 = creative (most expressive), 0.5 = natural, 1 = robust.
+  return voice === "mooshak" ? { stability: 0.0 } : { stability: 0.5 };
+}
+
+function fallbackSettings(voice: Voice) {
   return voice === "mooshak"
     ? { stability: 0.35, similarity_boost: 0.75, style: 0.6, use_speaker_boost: true }
-    : { stability: 0.5, similarity_boost: 0.75, style: 0.35, use_speaker_boost: true };
+    : { stability: 0.4, similarity_boost: 0.75, style: 0.45, use_speaker_boost: true };
 }
 
 export const apiKey = () => (process.env.ELEVENLABS_API_KEY || "").trim();
@@ -30,22 +38,27 @@ export function cacheStore() {
   }
 }
 
-export async function elevenlabs(text: string, voice: Voice) {
+async function callTts(text: string, voice: Voice, model: string, voiceSettings: object) {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 20000);
+  const t = setTimeout(() => ctrl.abort(), 22000);
   try {
-    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId(voice)}?output_format=mp3_44100_64`, {
+    return await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId(voice)}?output_format=mp3_44100_64`, {
       method: "POST",
       headers: { "xi-api-key": apiKey(), "Content-Type": "application/json", Accept: "audio/mpeg" },
-      body: JSON.stringify({ text, model_id: MODEL, voice_settings: settings(voice) }),
+      body: JSON.stringify({ text, model_id: model, voice_settings: voiceSettings }),
       signal: ctrl.signal,
     });
-    return r;
   } finally {
     clearTimeout(t);
   }
 }
 
+export async function elevenlabs(text: string, voice: Voice) {
+  const r = await callTts(text, voice, MODEL, settings(voice));
+  if (r.ok || r.status === 401 || r.status === 429) return r;
+  console.log("v3 failed, falling back", r.status, (await r.text().catch(() => "")).slice(0, 200));
+  return callTts(clean(text), voice, FALLBACK_MODEL, fallbackSettings(voice));
+}
 
 const AUDIO_HEADERS = { "Content-Type": "audio/mpeg", "Cache-Control": "public, max-age=31536000, immutable" };
 
@@ -139,10 +152,12 @@ export async function diagnose() {
 
   const t2 = Date.now();
   try {
-    const r = await elevenlabs("Hello Medhu!", "narrator");
-    out.narratorTest = r.ok ? `ok (${Date.now() - t2}ms)` : `HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`;
+    const r = await callTts("[excited] Hello Agent Medhu!", "narrator", MODEL, settings("narrator"));
+    out.narratorTestV3 = r.ok ? `ok (${Date.now() - t2}ms)` : `HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`;
+    const r2 = await callTts("[laughs] Hello Medhu!", "mooshak", MODEL, settings("mooshak"));
+    out.mooshakTestV3 = r2.ok ? "ok" : `HTTP ${r2.status}: ${(await r2.text()).slice(0, 200)}`;
   } catch (e) {
-    out.narratorTest = `error: ${String(e)}`;
+    out.narratorTestV3 = `error: ${String(e)}`;
   }
   return Response.json(out, { headers: { "Cache-Control": "no-store" } });
 }

@@ -7,28 +7,28 @@ export type Voice = "narrator" | "mooshak";
 
 export const P = {
   number: (n: number) => (n >= 0 && n <= 20 ? `${ENGLISH[n]}... ${HINDI_DEV[n]}` : String(n)),
-  giveN: (n: number) => `I want ${n} modaks, please!`,
-  tooMany: "Too many! Take some back.",
-  notEnough: "Not enough! Add some more.",
-  exactly: (n: number) => `Exactly ${n}! Shabaash!`,
-  tapToCount: "Tap each one to count it!",
-  howManyModaks: "So... how many modaks?",
-  howManySaw: "How many did you see?",
-  whichMore: "Which plate has more?",
-  countAgain: "Hmm, count them again!",
-  whatNext: "What comes next?",
-  colorWell: (c: string) => `${c}! Well done!`,
-  findShapes: (s: string) => `Find all the ${s}s!`,
-  foundAll: "You found them all!",
-  shakeWeb: "Whoooosh! The web shakes! Now how many modaks are there?",
-  mooshakClaim: (n: number) => `I count ${n} modaks!`,
-  mooshakHmm: "Hmm, are you sure? Count again!",
-  mooshakThanks: "Thank you, Medhu! You fixed my mistake!",
-  easyOne: "One last easy one!",
-  questDone: "Quest complete! Shabaash, Medhu!",
-  phoneDown: "Phone down! Time for a real-world game with Papa.",
-  learnIntro: "Let's learn the trick!",
-  newPower: (name: string) => `You got a new power: ${name}!`,
+  giveN: (n: number) => `[cheerfully] I want ${n} modaks, please!`,
+  tooMany: "[laughs] Oops, too many! Take some back.",
+  notEnough: "[curious] Hmm, not enough! Add some more.",
+  exactly: (n: number) => `[excited] Exactly ${n}! Shabaash!`,
+  tapToCount: "[cheerfully] Tap each one to count it!",
+  howManyModaks: "[curious] So... how many modaks?",
+  howManySaw: "[curious] How many did you see?",
+  whichMore: "[curious] Which plate has more?",
+  countAgain: "[warmly] Hmm, count them again!",
+  whatNext: "[curious] What comes next?",
+  colorWell: (c: string) => `[excited] ${c}! Well done!`,
+  findShapes: (s: string) => `[cheerfully] Find all the ${s}s!`,
+  foundAll: "[excited] You found them all!",
+  shakeWeb: "[dramatic] Whoooosh! The web shakes! [curious] Now how many modaks are there?",
+  mooshakClaim: (n: number) => `[proudly] I count ${n} modaks!`,
+  mooshakHmm: "[curious] Hmm, are you sure? Count again!",
+  mooshakThanks: "[laughs] Thank you, Medhu! You fixed my mistake!",
+  easyOne: "[cheerfully] One last easy one!",
+  questDone: "[excited] Mission complete! Shabaash, Agent Medhu!",
+  phoneDown: "[excited] Phone down, Agent! Time for a real-world mission with Papa.",
+  learnIntro: "[whispers] Let's learn the secret trick!",
+  newPower: (name: string) => `[excited] Mission complete! You unlocked a new power: ${name}!`,
 };
 
 const COLORS = ["red", "blue", "yellow", "green"];
@@ -77,3 +77,6 @@ export function phraseById(id: string) {
   if (!byId) byId = new Map(allPhrases().map((p) => [phraseId(p.text, p.voice), p]));
   return byId.get(id) ?? null;
 }
+
+// Strip ElevenLabs emotion tags like [excited] for anything shown on screen or read by the phone voice.
+export const clean = (t: string) => t.replace(/\[[a-z ]+\]\s*/gi, "").trim();
