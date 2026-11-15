@@ -1,4 +1,4 @@
-import { GaneshaArt, MooshakArt } from "@/components/Cast";
+import { GaneshaArt, KaaluArt, MooshakArt } from "@/components/Cast";
 
 // Round avatar portraits. Gods and Mooshak are drawn; Marvel heroes are shown
 // as generic emblems with their name (their likeness is not drawn).
@@ -157,6 +157,7 @@ export function Avatar({ name, size = 56 }: { name: string; size?: number }) {
   if (name === "Mooshak") return <Ring size={size} bg="#fff1dd"><div style={{ marginTop: size * 0.12 }}><MooshakArt size={size * 0.95} mood="happy" /></div></Ring>;
   if (name === "Ganesha") return <Ring size={size} bg="#ffe3b8"><div style={{ marginTop: size * 0.32 }}><GaneshaArt size={size * 1.05} /></div></Ring>;
   if (name === "Medhu") return <Ring size={size} bg="#e8f1ff"><div style={{ marginTop: size * 0.1 }}><MedhuHero size={size * 0.95} /></div></Ring>;
+  if (name === "Kaalu") return <Ring size={size} bg="#dfe7f2"><div style={{ marginTop: size * 0.06 }}><KaaluArt size={size * 0.9} /></div></Ring>;
   if (name === "Hanuman") return <Ring size={size} bg="#fff3c4"><Hanuman /></Ring>;
   if (name === "Krishna") return <Ring size={size} bg="#e8f1ff"><Krishna /></Ring>;
   if (name === "Durga") return <Ring size={size} bg="#fde4ec"><Durga /></Ring>;

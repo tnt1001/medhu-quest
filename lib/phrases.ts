@@ -9,26 +9,28 @@ export const P = {
   number: (n: number) => (n >= 0 && n <= 20 ? `${ENGLISH[n]}... ${HINDI_DEV[n]}` : String(n)),
   giveN: (n: number) => `[cheerfully] I want ${n} modaks, please!`,
   tooMany: "[laughs] Oops, too many! Take some back.",
-  notEnough: "[curious] Hmm, not enough! Add some more.",
+  notEnough: "[curious] Too few! Add more.",
   exactly: (n: number) => `[excited] Exactly ${n}! Shabaash!`,
   tapToCount: "[cheerfully] Tap each one to count it!",
   howManyModaks: "[curious] So... how many modaks?",
   howManySaw: "[curious] How many did you see?",
   whichMore: "[curious] Which plate has more?",
+  whichLess: "[curious] Which plate has less?",
+  findPlate: (n: number) => `[cheerfully] Find the plate with ${n}!`,
   countAgain: "[warmly] Hmm, count them again!",
   whatNext: "[curious] What comes next?",
   colorWell: (c: string) => `[excited] ${c}! Well done!`,
   findShapes: (s: string) => `[cheerfully] Find all the ${s}s!`,
   foundAll: "[excited] You found them all!",
-  shakeWeb: "[dramatic] Whoooosh! The web shakes! [curious] Now how many modaks are there?",
+  shakeWeb: "[dramatic] Whoooosh! The wind blows! [curious] How many modaks now?",
   mooshakClaim: (n: number) => `[proudly] I count ${n} modaks!`,
   mooshakHmm: "[curious] Hmm, are you sure? Count again!",
   mooshakThanks: "[laughs] Thank you, Medhu! You fixed my mistake!",
-  easyOne: "[cheerfully] One last easy one!",
-  questDone: "[excited] Mission complete! Shabaash, Agent Medhu!",
-  phoneDown: "[excited] Phone down, Agent! Time for a real-world mission with Papa.",
+  easyOne: "[cheerfully] Last one!",
+  questDone: "[excited] You did it! Shabaash, Medhu!",
+  phoneDown: "[excited] Phone down! Play with Papa now.",
   learnIntro: "[whispers] Let's learn the secret trick!",
-  newPower: (name: string) => `[excited] Mission complete! You unlocked a new power: ${name}!`,
+  newPower: (name: string) => `[excited] You did it! New power: ${name}!`,
 };
 
 const COLORS = ["red", "blue", "yellow", "green"];
@@ -44,10 +46,10 @@ export function allPhrases(): { text: string; voice: Voice }[] {
     add(q.teaser);
   }
   for (let n = 0; n <= 20; n++) add(P.number(n));
-  for (let n = 1; n <= 12; n++) { add(P.giveN(n)); add(P.exactly(n)); add(P.mooshakClaim(n), "mooshak"); }
+  for (let n = 1; n <= 12; n++) { add(P.giveN(n)); add(P.exactly(n)); add(P.mooshakClaim(n), "mooshak"); add(P.findPlate(n)); }
   COLORS.forEach((c) => add(P.colorWell(c)));
   SHAPES.forEach((s) => add(P.findShapes(s)));
-  [P.tooMany, P.notEnough, P.tapToCount, P.howManyModaks, P.howManySaw, P.whichMore, P.countAgain, P.whatNext, P.foundAll, P.shakeWeb, P.easyOne, P.questDone, P.phoneDown].forEach((t) => add(t));
+  [P.whichLess, P.tooMany, P.notEnough, P.tapToCount, P.howManyModaks, P.howManySaw, P.whichMore, P.countAgain, P.whatNext, P.foundAll, P.shakeWeb, P.easyOne, P.questDone, P.phoneDown].forEach((t) => add(t));
   add(P.learnIntro);
   for (const q of QUESTS) add(P.newPower(q.power.name));
   add(P.mooshakHmm, "mooshak");

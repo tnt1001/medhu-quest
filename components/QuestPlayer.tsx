@@ -204,12 +204,12 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             <div className="power-chip" style={{ marginTop: 14 }}>
               <span className="power-ico">⚡</span>
               <div style={{ textAlign: "left" }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#8a5a1a", textTransform: "uppercase", letterSpacing: ".05em" }}>Power to win</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#8a5a1a", textTransform: "uppercase", letterSpacing: ".05em" }}>You will win</div>
                 <div style={{ fontWeight: 900 }}>{quest.power.name}</div>
               </div>
             </div>
             <div style={{ marginTop: 18 }}>
-              <button className="btn" onClick={() => setStep(warm ? "warmup" : "story")}>Start the quest!</button>
+              <button className="btn" onClick={() => setStep(warm ? "warmup" : "story")}>Play!</button>
             </div>
             <p className="muted" style={{ fontSize: 12, marginTop: 18 }}>For Papa: skill {quest.skill} - {skill?.name}{quest.review.length ? `; review ${quest.review.join(", ")}` : ""}.</p>
           </div>
@@ -222,7 +222,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             <MooshakArt size={44} mood="excited" />
             <div>
               <div className="eyebrow">Warm-up</div>
-              <div style={{ fontWeight: 900, fontSize: 17 }}>Remember your powers?</div>
+              <div style={{ fontWeight: 900, fontSize: 17 }}>Quick practice</div>
             </div>
           </div>
           <GamePlayer game={warm} onDone={() => setStep("story")} />
@@ -231,6 +231,9 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
 
       {step === "story" && (
         <div className="fade-in" key={`s${panel}`}>
+          <div className="row" style={{ justifyContent: "flex-end", marginBottom: 6 }}>
+            <button className="skipbtn" onClick={() => { stop(); setStep(hasLearn ? "learn" : "game"); }}>Skip story ⏭</button>
+          </div>
           <div onClick={skip} style={{ cursor: "pointer" }}><SceneView scene={quest.story[panel].s} /></div>
           <div className="storycard">
             <p className="panel-text" style={{ margin: 0 }}>{clean(quest.story[panel].t)}</p>
@@ -244,7 +247,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             {panel > 0 && <button className="btn ghost" onClick={() => setPanel(panel - 1)}>Back</button>}
             {(!auto || panel + 1 === quest.story.length) && (
               <button className={`btn ${panel + 1 === quest.story.length ? "pulse-btn" : ""}`} style={{ flex: 1 }} onClick={() => { stop(); if (panel + 1 < quest.story.length) setPanel(panel + 1); else setStep(hasLearn ? "learn" : "game"); }}>
-                {panel + 1 < quest.story.length ? "Next" : hasLearn ? "Learn the trick!" : "Let's go!"}
+                {panel + 1 < quest.story.length ? "Next" : hasLearn ? "Learn" : "Go!"}
               </button>
             )}
           </div>
@@ -264,7 +267,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
           <div className="storycard" style={{ marginTop: 10 }}>
             <p className="panel-text" style={{ margin: 0 }}>{clean(quest.learn[lstep].t)}</p>
             <div className="row spread" style={{ marginTop: 10 }}>
-              <button className="speak" onClick={() => { setReplay(replay + 1); setTick(tick + 1); }}>↻ Show again</button>
+              <button className="speak" onClick={() => { setReplay(replay + 1); setTick(tick + 1); }}>↻ Again</button>
               <button className="speak" onClick={() => { setAuto(!auto); stop(); setTick(tick + 1); }}>{auto ? "❚❚" : "▶"}</button>
               <div className="dots">{quest.learn.map((_, i) => <span key={i} className={i === lstep ? "on" : i < lstep ? "done" : ""} />)}</div>
             </div>
@@ -274,7 +277,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             {lstep > 0 && <button className="btn ghost" onClick={() => setLstep(lstep - 1)}>Back</button>}
             {(!auto || lstep + 1 === quest.learn.length) && (
               <button className={`btn ${lstep + 1 === quest.learn.length ? "pulse-btn" : ""}`} style={{ flex: 1 }} onClick={() => { stop(); if (lstep + 1 < quest.learn.length) setLstep(lstep + 1); else setStep(guidedGame ? "guided" : "game"); }}>
-                {lstep + 1 < quest.learn.length ? "Next" : "Now you try!"}
+                {lstep + 1 < quest.learn.length ? "Next" : "Try it!"}
               </button>
             )}
           </div>
@@ -286,7 +289,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
           <div className="learnhead">
             <MooshakArt size={44} mood="happy" />
             <div>
-              <div className="eyebrow">Try it with me</div>
+              <div className="eyebrow">Try with Mooshak</div>
               <div style={{ fontWeight: 900, fontSize: 17 }}>{quest.power.name}</div>
             </div>
           </div>
@@ -303,7 +306,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
 
       {step === "game" && (
         <div>
-          <p className="center" style={{ margin: "4px 0" }}><span className="pill">You do it! · {quest.gameName}</span></p>
+          <p className="center" style={{ margin: "4px 0" }}><span className="pill">{quest.gameName}</span></p>
           <GamePlayer game={mainGame} onDone={afterGame} />
         </div>
       )}
@@ -323,7 +326,7 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
             </ol>
           </div>
           <div className="center" style={{ marginTop: 16 }}>
-            <button className="btn" onClick={() => setStep(quest.mistake ? "mistake" : "easy")}>We played it!</button>
+            <button className="btn" onClick={() => setStep(quest.mistake ? "mistake" : "easy")}>Done!</button>
           </div>
         </div>
       )}
@@ -363,7 +366,7 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
     <div className="center fade-in" style={{ position: "relative" }}>
       <Confetti />
       <MooshakArt size={96} mood="excited" />
-      <p className="big" style={{ margin: "4px 0" }}>Quest complete!</p>
+      <p className="big" style={{ margin: "4px 0" }}>You did it!</p>
       <div className="power-chip pop" style={{ margin: "10px auto" }}>
         <span className="power-ico">⚡</span>
         <div style={{ textAlign: "left" }}>
@@ -395,7 +398,7 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
       <p className="muted" style={{ fontWeight: 800 }}>{clean(quest.teaser)}</p>
       {reward.error && <p className="muted" style={{ fontSize: 13 }}>Stars not saved (offline?). Papa can add them in Admin.</p>}
       <div className="row" style={{ justifyContent: "center", marginTop: 12 }}>
-        <Link href="/" className="btn" style={{ textDecoration: "none" }}>Back to the map</Link>
+        <Link href="/" className="btn" style={{ textDecoration: "none" }}>Home</Link>
       </div>
       {next && <p className="muted" style={{ fontSize: 12, marginTop: 16 }}>Papa: log today&apos;s session in Admin (1 minute).</p>}
     </div>

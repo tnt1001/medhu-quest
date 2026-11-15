@@ -212,3 +212,18 @@ table.t th { font-size: 12px; text-transform: uppercase; letter-spacing: .03em; 
 @keyframes kaalu { 0%, 100% { transform: translate(0, 0) rotate(-4deg); } 50% { transform: translate(-10px, 8px) rotate(4deg); } }
 .flap { transform-origin: 50% 60%; animation: flap .35s ease-in-out infinite alternate; }
 @keyframes flap { to { transform: scaleY(.55); } }
+
+/* Plates and answers: big, clear green for right and red for wrong */
+.plate { position: relative; flex: 1; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; align-items: center; min-height: var(--stage-h); padding: 10px; background: #fdf2e2; border: 4px solid #f1e3cf; border-radius: 22px; cursor: pointer; font-family: inherit; color: var(--ink); transition: background .2s, border-color .2s; }
+.plate.right { background: #d9f5e1; border-color: #2e9d5b; }
+.plate.wrong { background: #fde2e2; border-color: #d64545; animation: shake .3s; }
+.plate .mark { position: absolute; top: -12px; right: -10px; width: 36px; height: 36px; border-radius: 50%; color: white; font-weight: 900; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 3px solid white; z-index: 2; }
+.plate.right .mark { background: #2e9d5b; }
+.plate.wrong .mark { background: #d64545; }
+.plate-note { width: 100%; text-align: center; font-weight: 800; color: #b23434; font-size: 14px; margin-top: 4px; }
+.choice.right { border-color: #2e9d5b; background: #2e9d5b; color: white; }
+.choice.wrong { border-color: #d64545; background: #d64545; color: white; }
+.choice.right::after { content: " ✓"; font-size: .6em; }
+.choice.wrong::after { content: " ✗"; font-size: .6em; }
+
+.skipbtn { border: 2px solid var(--line); background: white; border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 15px; color: var(--ink); cursor: pointer; font-family: inherit; }

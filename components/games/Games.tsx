@@ -67,12 +67,13 @@ function CountGame({ item, rounds, onDone }: { item: Item; rounds: number[]; onD
 }
 
 /* Flash! Show for 2 seconds, then hide and ask. */
-function FivesFrame({ n, item }: { n: number; item: Item }) {
+function FivesFrame({ n, item, small = false }: { n: number; item: Item; small?: boolean }) {
+  const cell = small ? "min(40px, 10vw)" : "min(56px, 14vw)";
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, min(56px, 14vw))", gap: 6, padding: 8, background: "#f6e3c4", borderRadius: 14 }}>
+    <div style={{ display: "grid", gridTemplateColumns: `repeat(5, ${cell})`, gap: 6, padding: 8, background: "#f6e3c4", borderRadius: 14 }}>
       {Array.from({ length: 5 }, (_, k) => (
-        <div key={k} style={{ width: "min(56px, 14vw)", height: "min(56px, 14vw)", borderRadius: 10, background: "white", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {k < n && <ItemArt item={item} size={36} />}
+        <div key={k} style={{ width: cell, height: cell, borderRadius: 10, background: "white", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {k < n && <ItemArt item={item} size={small ? 26 : 36} />}
         </div>
       ))}
     </div>
@@ -88,9 +89,9 @@ const DICE: Record<number, [number, number][]> = {
   6: [[28, 22], [72, 22], [28, 50], [72, 50], [28, 78], [72, 78]],
 };
 
-function Dice({ n }: { n: number }) {
+function Dice({ n, size = 170 }: { n: number; size?: number }) {
   return (
-    <svg width="170" height="170" viewBox="0 0 100 100" aria-label={`dice ${n}`}>
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-label={`dice ${n}`}>
       <rect x="4" y="4" width="92" height="92" rx="16" fill="white" stroke="#2b2118" strokeWidth="3" />
       {(DICE[n] || []).map(([x, y], k) => <circle key={k} cx={x} cy={y} r="9" fill="#d64545" />)}
     </svg>
@@ -111,7 +112,7 @@ function FlashGame({ item, layout, rounds, onDone }: { item: Item; layout: "scat
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
       <div className="stage">
-        {phase === "ready" && <button className="btn" onClick={go}>Ready? Look!</button>}
+        {phase === "ready" && <button className="btn" onClick={go}>Look!</button>}
         {phase === "show" && (layout === "dice" ? <Dice n={n} /> : layout === "frame5" ? <FivesFrame n={n} item={item} /> : <Scattered n={n} item={item} seed={i * 5 + n} />)}
         {phase === "ask" && <p className="big center">How many did you see?</p>}
       </div>
@@ -119,7 +120,7 @@ function FlashGame({ item, layout, rounds, onDone }: { item: Item; layout: "scat
         <>
           <NumberChoices key={i} answer={n} seed={i + 5} onAnswer={next} explain={<CountDemo item={item} n={n} k={i + 50} />} />
           <div className="center" style={{ marginTop: 10 }}>
-            <button className="btn ghost small" onClick={go}>Show me again</button>
+            <button className="btn ghost small" onClick={go}>See again</button>
           </div>
         </>
       )}
@@ -158,7 +159,7 @@ function GiveNGame({ item, rounds, onDone, guided }: { item: Item; rounds: numbe
       </div>
       <div className="center" style={{ marginTop: 10 }}>
         {state === "right" ? (
-          <p className="big pop" style={{ color: "#2e9d5b" }}>Exactly {n}! Shabaash!</p>
+          <p className="big pop" style={{ color: "#2e9d5b" }}>✓ Exactly {n}!</p>
         ) : (
           <button
             className="btn"
@@ -177,10 +178,10 @@ function GiveNGame({ item, rounds, onDone, guided }: { item: Item; rounds: numbe
               }
             }}
           >
-            Here you go!
+            Give
           </button>
         )}
-        {state === "wrong" && <p className="muted" style={{ fontWeight: 700 }}>{plate > n ? "Too many! Take some back." : "Not enough! Add some more."}</p>}
+        {state === "wrong" && <p className="muted" style={{ fontWeight: 700 }}>{plate > n ? "Too many! Take some back." : "Too few! Add more."}</p>}
       </div>
     </div>
   );
@@ -196,7 +197,7 @@ function ConserveGame({ item, rounds, onDone }: { item: Item; rounds: number[]; 
   return (
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
-      <p className="panel-text center">{phase === "row" ? `Count them with Papa: there are ${n}.` : phase === "shake" ? "Whoooosh! The web shakes!" : "Now how many modaks are there?"}</p>
+      <p className="panel-text center">{phase === "row" ? `Count them: there are ${n}.` : phase === "shake" ? "Whoosh! The wind blows!" : "How many now?"}</p>
       <div className="stage" style={{ padding: 0 }}>
         <div style={{ position: "relative", width: "100%", height: "var(--stage-h)" }}>
           {Array.from({ length: n }, (_, k) => {
@@ -212,7 +213,7 @@ function ConserveGame({ item, rounds, onDone }: { item: Item; rounds: number[]; 
       </div>
       {phase === "row" && (
         <div className="center" style={{ marginTop: 14 }}>
-          <button className="btn" onClick={() => { setPhase("shake"); sfx.whoosh(); say(P.shakeWeb); setTimeout(() => setPhase("ask"), 1200); }}>Shake the web!</button>
+          <button className="btn" onClick={() => { setPhase("shake"); sfx.whoosh(); say(P.shakeWeb); setTimeout(() => setPhase("ask"), 1200); }}>Make wind!</button>
         </div>
       )}
       {phase === "ask" && <NumberChoices key={i} answer={n} seed={i + 9} onAnswer={next} explain={<ConserveDemo item={item} n={n} k={i} />} />}
@@ -221,17 +222,20 @@ function ConserveGame({ item, rounds, onDone }: { item: Item; rounds: number[]; 
 }
 
 /* More or Less: tap the plate with more. */
-function CompareGame({ item, rounds, onDone }: { item: Item; rounds: [number, number][]; onDone: Done }) {
+function CompareGame({ item, rounds, onDone, ask = "more" }: { item: Item; rounds: [number, number][]; onDone: Done; ask?: "more" | "less" }) {
   const { i, next } = useRounds(rounds.length, onDone);
   const [a, b] = rounds[i];
   const [picked, setPicked] = useState<number | null>(null);
   const [missed, setMissed] = useState(false);
   useEffect(() => { setPicked(null); setMissed(false); }, [i]);
-  const answer = a > b ? 0 : 1;
-  useEffect(() => { say(P.whichMore); }, [i]);
+  const less = ask === "less";
+  const answer = less ? (a < b ? 0 : 1) : (a > b ? 0 : 1);
+  const target = less ? Math.min(a, b) : Math.max(a, b);
+  useEffect(() => { say(less ? P.whichLess : P.whichMore); }, [i, less]);
   const Plate = ({ n, side }: { n: number; side: number }) => {
-    // The plate with fewer items is drawn spread out wider sometimes, to make it tricky.
+    // Sometimes the smaller group is spread out wide, to make it tricky.
     const wide = n < Math.max(a, b) && i % 2 === 1;
+    const state = picked === side ? (side === answer ? "right" : "wrong") : "";
     return (
       <button
         onClick={() => {
@@ -239,13 +243,14 @@ function CompareGame({ item, rounds, onDone }: { item: Item; rounds: [number, nu
           setPicked(side);
           if (side === answer) {
             sfx.right();
-            setTimeout(() => sayNumber(Math.max(a, b)), 250);
+            setTimeout(() => sayNumber(target), 250);
             setTimeout(() => next(!missed, missed), 1600);
           } else { sfx.wrong(); say(P.countAgain); setMissed(true); }
         }}
-        className="card"
-        style={{ flex: 1, cursor: "pointer", borderColor: picked === side ? (side === answer ? "#2e9d5b" : "#d64545") : undefined, display: "flex", flexWrap: "wrap", gap: wide ? 18 : 2, justifyContent: "center", alignContent: "center", minHeight: "var(--stage-h)", padding: 10, background: "#fdf2e2" }}
+        className={`plate ${state}`}
+        style={{ gap: wide ? 18 : 2 }}
       >
+        {state && <span className="mark">{state === "right" ? "✓" : "✗"}</span>}
         {Array.from({ length: n }, (_, k) => <ItemArt key={k} item={item} size={wide ? 36 : 34} />)}
       </button>
     );
@@ -253,15 +258,62 @@ function CompareGame({ item, rounds, onDone }: { item: Item; rounds: [number, nu
   return (
     <div className="fade-in" key={i}>
       <Progress total={rounds.length} at={i} />
-      <p className="big center">Which plate has MORE?</p>
+      <p className="big center">Which plate has {less ? "LESS" : "MORE"}?</p>
       <div className="row" style={{ alignItems: "stretch" }}>
         <Plate n={a} side={0} />
         <Plate n={b} side={1} />
       </div>
-      {picked === answer && <p className="big center pop" style={{ color: "#2e9d5b" }}>{Math.max(a, b)} is more than {Math.min(a, b)}!</p>}
+      {picked === answer && <p className="big center pop" style={{ color: "#2e9d5b" }}>Yes! {target} is {less ? "less" : "more"}.</p>}
       {picked !== null && picked !== answer && (
         <div className="explain fade-in"><div className="explain-title">Let&apos;s pair them up</div><MatchDemo item={item} a={a} b={b} k={i} /></div>
       )}
+    </div>
+  );
+}
+
+/* Find the Plate: three plates, tap the one with N. */
+function PlateArt({ n, item, layout }: { n: number; item: Item; layout: "scatter" | "dice" | "frame5" }) {
+  if (layout === "dice") return <Dice n={n} size={92} />;
+  if (layout === "frame5") return <FivesFrame n={n} item={item} small />;
+  return <div style={{ display: "flex", flexWrap: "wrap", gap: 2, justifyContent: "center", maxWidth: 110 }}>{Array.from({ length: n }, (_, k) => <ItemArt key={k} item={item} size={26} />)}</div>;
+}
+
+function PickGame({ item, layout, rounds, onDone }: { item: Item; layout: "scatter" | "dice" | "frame5"; rounds: number[]; onDone: Done }) {
+  const { i, next } = useRounds(rounds.length, onDone);
+  const n = rounds[i];
+  const max = layout === "dice" ? 6 : layout === "frame5" ? 5 : 10;
+  const opts = useMemo(() => {
+    const others = shuffle([n - 2, n - 1, n + 1, n + 2].filter((x) => x >= 1 && x <= max), i + 3).slice(0, 2);
+    return shuffle([n, ...others], i + 9);
+  }, [n, i, max]);
+  const [wrong, setWrong] = useState<number[]>([]);
+  const [done, setDone] = useState(false);
+  useEffect(() => { setWrong([]); setDone(false); say(P.findPlate(n)); }, [i, n]);
+  return (
+    <div className="fade-in" key={i}>
+      <Progress total={rounds.length} at={i} />
+      <p className="big center">Find the plate with <span style={{ color: "#f28c28" }}>{n}</span></p>
+      <div style={{ display: "grid", gap: 10 }}>
+        {opts.map((c) => {
+          const state = done && c === n ? "right" : wrong.includes(c) ? "wrong" : "";
+          return (
+            <button
+              key={c}
+              className={`plate ${state}`}
+              style={{ minHeight: 0, padding: 12 }}
+              onClick={() => {
+                if (done) return;
+                if (c === n) { setDone(true); sfx.right(); setTimeout(() => sayNumber(n), 250); setTimeout(() => next(wrong.length === 0, wrong.length > 0), 1500); }
+                else { sfx.wrong(); setWrong([...wrong, c]); }
+              }}
+            >
+              {state && <span className="mark">{state === "right" ? "✓" : "✗"}</span>}
+              <PlateArt n={c} item={item} layout={layout} />
+              {wrong.includes(c) && <span className="plate-note">This one has {c}</span>}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -388,7 +440,7 @@ function CheckGame({ items, onDone }: { items: number[]; onDone: Done }) {
         </ol>
       </div>
       <div className="center" style={{ marginTop: 16 }}>
-        <button className="btn" onClick={() => onDone({ tries: 0, correct: 0, triedAgain: false })}>We did the helper test!</button>
+        <button className="btn" onClick={() => onDone({ tries: 0, correct: 0, triedAgain: false })}>Done!</button>
       </div>
     </div>
   );
@@ -400,6 +452,7 @@ const HINTS: Record<string, string> = {
   giveN: "Move one at a time and count. Stop at the number!",
   conserve: "Remember the row. Did anyone add or take away?",
   compare: "Look carefully, or pair them up!",
+  pick: "Count each plate, or use your super eyes!",
   pattern: "Say the colours like a song. What comes next?",
   shapes: "Count the corners to check!",
 };
@@ -413,7 +466,7 @@ export function GamePlayer({ game, onDone, guided = false, companion = true }: {
     const g = game.parts[part];
     body = (
       <div key={part}>
-        <p className="center" style={{ margin: "2px 0" }}><span className="pill">Challenge {part + 1} of {game.parts.length}</span></p>
+        <p className="center" style={{ margin: "2px 0" }}><span className="pill">Game {part + 1} of {game.parts.length}</span></p>
         <GamePlayer
           game={g}
           companion={false}
@@ -432,7 +485,8 @@ export function GamePlayer({ game, onDone, guided = false, companion = true }: {
       case "flash": body = <FlashGame item={game.item} layout={game.layout} rounds={game.rounds} onDone={onDone} />; break;
       case "giveN": body = <GiveNGame item={game.item} rounds={game.rounds} onDone={onDone} guided={guided} />; break;
       case "conserve": body = <ConserveGame item={game.item} rounds={game.rounds} onDone={onDone} />; break;
-      case "compare": body = <CompareGame item={game.item} rounds={game.rounds} onDone={onDone} />; break;
+      case "compare": body = <CompareGame item={game.item} rounds={game.rounds} ask={game.ask} onDone={onDone} />; break;
+      case "pick": body = <PickGame item={game.item} layout={game.layout} rounds={game.rounds} onDone={onDone} />; break;
       case "pattern": body = <PatternGame rounds={game.rounds} onDone={onDone} />; break;
       case "shapes": body = <ShapesGame rounds={game.rounds} onDone={onDone} />; break;
       case "check": body = <CheckGame items={game.items} onDone={onDone} />; break;
@@ -472,13 +526,13 @@ export function MistakeRound({ item, shown, claim, onDone }: { item: Item; shown
       </div>
       {phase === "judge" && (
         <div className="row" style={{ marginTop: 16 }}>
-          <button className="btn ghost" style={{ flex: 1 }} onClick={() => { setFixedFirst(false); sfx.wrong(); say(P.mooshakHmm, "mooshak"); }}>He&apos;s right</button>
-          <button className="btn" style={{ flex: 1 }} onClick={() => setPhase("fix")}>Oops, Mooshak!</button>
+          <button className="btn ghost" style={{ flex: 1 }} onClick={() => { setFixedFirst(false); sfx.wrong(); say(P.mooshakHmm, "mooshak"); }}>Right ✓</button>
+          <button className="btn" style={{ flex: 1 }} onClick={() => setPhase("fix")}>Wrong ✗</button>
         </div>
       )}
       {phase === "fix" && (
         <>
-          <p className="big center">How many really?</p>
+          <p className="big center">How many?</p>
           <NumberChoices answer={shown} seed={shown + 21} explain={<CountDemo item={item} n={shown} k={shown} />} onAnswer={() => { setPhase("done"); say(P.mooshakThanks, "mooshak"); setTimeout(() => onDone(fixedFirst), 1500); }} />
         </>
       )}
@@ -491,7 +545,7 @@ export function EasyWin({ item, n, onDone }: { item: Item; n: number; onDone: ()
   useEffect(() => { say(P.easyOne); }, []);
   return (
     <div className="fade-in">
-      <p className="big center">One last easy one!</p>
+      <p className="big center">Last one!</p>
       <div className="stage">
         <Scattered n={n} item={item} seed={n + 40} />
       </div>

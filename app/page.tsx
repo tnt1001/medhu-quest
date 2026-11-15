@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ItemArt } from "@/components/Art";
-import { GaneshaArt, WebArt } from "@/components/Cast";
+import { GaneshaArt, KaaluArt } from "@/components/Cast";
 import { Avatar } from "@/components/Avatars";
 import { SceneView } from "@/components/Scene";
 import LockModal from "@/components/LockModal";
@@ -62,7 +62,7 @@ export default function Home() {
 
       <div className="arc-hero">
         <div style={{ position: "absolute", right: -6, bottom: -6 }}><GaneshaArt size={112} /></div>
-        <div style={{ position: "absolute", right: 92, top: -18, opacity: 0.55 }}><WebArt size={86} /></div>
+        <div className="kaalu-fly" style={{ position: "absolute", right: 100, top: 6 }}><KaaluArt size={52} /></div>
         <div style={{ position: "relative", maxWidth: "62%" }}>
           <div className="eyebrow" style={{ color: "#fff3dd" }}>Arc {arc.id} · {arc.costars}</div>
           <div style={{ fontSize: 23, fontWeight: 900, color: "white", lineHeight: 1.1, margin: "4px 0 10px" }}>{arc.title}</div>
@@ -105,7 +105,7 @@ export default function Home() {
               <div className="tile-body">
                 <div style={{ fontWeight: 900, fontSize: 14, lineHeight: 1.2, color: open ? "#2b2118" : "#9a8a78" }}>{q.title}</div>
                 <div style={{ fontSize: 11, fontWeight: 800, color: finished ? "#1f7a43" : current ? "#c96a10" : "#b5a591", marginTop: 2 }}>
-                  {finished ? "Done · play again" : current ? "Play now!" : open ? "Open" : "Locked"}
+                  {finished ? "Done ✓ Play again" : current ? "Play now!" : open ? "Open" : "Locked"}
                 </div>
               </div>
             </>
@@ -130,7 +130,7 @@ export default function Home() {
       ))}
 
       <div className="row" style={{ justifyContent: "space-between", marginTop: 24 }}>
-        <Link href="/cards" className="btn ghost small" style={{ textDecoration: "none" }}>My powers & cards</Link>
+        <Link href="/cards" className="btn ghost small" style={{ textDecoration: "none" }}>My powers</Link>
         <Link href="/admin" className="muted" style={{ fontSize: 13 }}>Papa&apos;s admin</Link>
       </div>
 
