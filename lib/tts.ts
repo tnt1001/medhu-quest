@@ -4,8 +4,11 @@ import { clean, type Voice } from "@/lib/phrases";
 
 // Eleven v3 understands emotion tags like [excited] and [whispers]. If it fails for a voice,
 // we fall back to multilingual v2 with the tags removed.
-const MODEL = "eleven_v3";
+// Default: multilingual v2, which your Indian voices are built for. Set ELEVENLABS_MODEL=eleven_v3
+// in Netlify to try v3 (it reads emotion tags like [excited]) with a voice that supports it.
+const MODEL = (process.env.ELEVENLABS_MODEL || "eleven_multilingual_v2").trim();
 const FALLBACK_MODEL = "eleven_multilingual_v2";
+const isV3 = () => MODEL === "eleven_v3";
 
 export function voiceId(voice: Voice) {
   if (voice === "mooshak") return (process.env.ELEVENLABS_VOICE_MOOSHAK || process.env.ELEVENLABS_VOICE_NARRATOR || "EXAVITQu4vr4xnSDxMaL").trim();
@@ -13,8 +16,11 @@ export function voiceId(voice: Voice) {
 }
 
 export function settings(voice: Voice) {
-  // v3 only takes stability: 0 = creative (most expressive), 0.5 = natural, 1 = robust.
-  return voice === "mooshak" ? { stability: 0.0 } : { stability: 0.5 };
+  if (isV3()) return voice === "mooshak" ? { stability: 0.0 } : { stability: 0.5 };
+  // v2: lower stability + higher style = livelier, more dramatic storytelling.
+  return voice === "mooshak"
+    ? { stability: 0.28, similarity_boost: 0.8, style: 0.75, use_speaker_boost: true }
+    : { stability: 0.32, similarity_boost: 0.8, style: 0.65, use_speaker_boost: true };
 }
 
 function fallbackSettings(voice: Voice) {
@@ -54,6 +60,8 @@ async function callTts(text: string, voice: Voice, model: string, voiceSettings:
 }
 
 export async function elevenlabs(text: string, voice: Voice) {
+  // v2 would read "[excited]" out loud, so tags are removed unless we're on v3.
+  if (!isV3()) return callTts(clean(text), voice, MODEL, settings(voice));
   const r = await callTts(text, voice, MODEL, settings(voice));
   if (r.ok || r.status === 401 || r.status === 429) return r;
   console.log("v3 failed, falling back", r.status, (await r.text().catch(() => "")).slice(0, 200));
@@ -152,12 +160,13 @@ export async function diagnose() {
 
   const t2 = Date.now();
   try {
-    const r = await callTts("[excited] Hello Agent Medhu!", "narrator", MODEL, settings("narrator"));
-    out.narratorTestV3 = r.ok ? `ok (${Date.now() - t2}ms)` : `HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`;
-    const r2 = await callTts("[laughs] Hello Medhu!", "mooshak", MODEL, settings("mooshak"));
-    out.mooshakTestV3 = r2.ok ? "ok" : `HTTP ${r2.status}: ${(await r2.text()).slice(0, 200)}`;
+    out.model = MODEL;
+    const r = await elevenlabs("[excited] Hello Agent Medhu!", "narrator");
+    out.narratorTest = r.ok ? `ok (${Date.now() - t2}ms)` : `HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`;
+    const r2 = await elevenlabs("[laughs] Hello Medhu!", "mooshak");
+    out.mooshakTest = r2.ok ? "ok" : `HTTP ${r2.status}: ${(await r2.text()).slice(0, 200)}`;
   } catch (e) {
-    out.narratorTestV3 = `error: ${String(e)}`;
+    out.narratorTest = `error: ${String(e)}`;
   }
   return Response.json(out, { headers: { "Cache-Control": "no-store" } });
 }
