@@ -227,3 +227,27 @@ table.t th { font-size: 12px; text-transform: uppercase; letter-spacing: .03em; 
 .choice.wrong::after { content: " ✗"; font-size: .6em; }
 
 .skipbtn { border: 2px solid var(--line); background: white; border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 15px; color: var(--ink); cursor: pointer; font-family: inherit; }
+
+/* Balloon Pop */
+.sky-stage { position: relative; height: clamp(260px, 44dvh, 380px); background: linear-gradient(#bfe3ff, #eef8ff); border: 3px solid white; border-radius: 22px; overflow: hidden; }
+.balloon { position: absolute; border: 0; background: none; padding: 0; cursor: pointer; }
+.float-b { bottom: -90px; animation: rise linear infinite; }
+@keyframes rise { from { transform: translateY(0); } to { transform: translateY(calc(-1 * clamp(360px, 56dvh, 480px))); } }
+.bob-b { animation: bob 2.4s ease-in-out infinite; }
+.pop-count { position: absolute; top: 10px; left: 10px; min-width: 46px; height: 46px; border-radius: 14px; background: #f28c28; color: white; font-weight: 900; font-size: 26px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 0 #c96a10; }
+/* Feed Mooshak */
+.feed-stage { display: flex; align-items: center; gap: 8px; background: radial-gradient(circle at 70% 60%, #fff, #fff5e3); border: 3px solid #f6dfbf; border-radius: 22px; padding: 12px; min-height: clamp(220px, 36dvh, 320px); }
+.feed-pile { flex: 1; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-content: center; }
+.feed-mooshak { flex: 0 0 auto; text-align: center; }
+.tap-item { border: 0; background: none; padding: 0; cursor: pointer; }
+.fly-to-mouth { animation: flyto .38s ease-in forwards; }
+@keyframes flyto { to { transform: translate(140px, -10px) scale(.3); opacity: 0; } }
+.chew { animation: chew .4s ease-in-out 2; }
+@keyframes chew { 50% { transform: scale(1.06, .94); } }
+.shake-x { animation: shake .3s 2; }
+/* Memory cards */
+.mcard { aspect-ratio: 1; border-radius: 18px; border: 4px solid #f1e3cf; background: linear-gradient(135deg, #f28c28, #e3632b); display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit; transition: transform .25s, background .2s; box-shadow: 0 4px 0 rgba(0,0,0,.08); }
+.mcard.shown { background: white; transform: rotateY(0); }
+.mcard.right { background: #d9f5e1; border-color: #2e9d5b; }
+.mcard.wrong { background: #fde2e2; border-color: #d64545; animation: shake .3s; }
+.mcard-back { color: white; font-size: 34px; font-weight: 900; }

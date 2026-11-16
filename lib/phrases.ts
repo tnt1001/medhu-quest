@@ -17,6 +17,14 @@ export const P = {
   whichMore: "[curious] Which plate has more?",
   whichLess: "[curious] Which plate has less?",
   findPlate: (n: number) => `[cheerfully] Find the plate with ${n}!`,
+  popN: (n: number) => `[cheerfully] Pop exactly ${n} balloons!`,
+  popCount: "[cheerfully] Pop all the balloons, and count them!",
+  howManyPopped: "[curious] How many did you pop?",
+  feedN: (n: number) => `[excited] Mooshak is hungry! Feed him ${n} modaks!`,
+  tooFull: "[laughs] Oh no, too many! Mooshak is too full!",
+  stillHungry: "[curious] Mooshak is still hungry! Give him more.",
+  yum: "[laughs] Yum yum! Thank you!",
+  memoryStart: "[cheerfully] Find the pairs! Match the dots to the number.",
   countAgain: "[warmly] Hmm, count them again!",
   whatNext: "[curious] What comes next?",
   colorWell: (c: string) => `[excited] ${c}! Well done!`,
@@ -46,10 +54,10 @@ export function allPhrases(): { text: string; voice: Voice }[] {
     add(q.teaser);
   }
   for (let n = 0; n <= 20; n++) add(P.number(n));
-  for (let n = 1; n <= 12; n++) { add(P.giveN(n)); add(P.exactly(n)); add(P.mooshakClaim(n), "mooshak"); add(P.findPlate(n)); }
+  for (let n = 1; n <= 12; n++) { add(P.giveN(n)); add(P.exactly(n)); add(P.mooshakClaim(n), "mooshak"); add(P.findPlate(n)); add(P.popN(n)); add(P.feedN(n)); }
   COLORS.forEach((c) => add(P.colorWell(c)));
   SHAPES.forEach((s) => add(P.findShapes(s)));
-  [P.whichLess, P.tooMany, P.notEnough, P.tapToCount, P.howManyModaks, P.howManySaw, P.whichMore, P.countAgain, P.whatNext, P.foundAll, P.shakeWeb, P.easyOne, P.questDone, P.phoneDown].forEach((t) => add(t));
+  [P.popCount, P.howManyPopped, P.tooFull, P.stillHungry, P.yum, P.memoryStart, P.whichLess, P.tooMany, P.notEnough, P.tapToCount, P.howManyModaks, P.howManySaw, P.whichMore, P.countAgain, P.whatNext, P.foundAll, P.shakeWeb, P.easyOne, P.questDone, P.phoneDown].forEach((t) => add(t));
   add(P.learnIntro);
   for (const q of QUESTS) add(P.newPower(q.power.name));
   add(P.mooshakHmm, "mooshak");

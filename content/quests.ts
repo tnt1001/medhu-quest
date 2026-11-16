@@ -8,6 +8,9 @@ export type Game =
   | { type: "conserve"; item: Item; rounds: number[] }
   | { type: "compare"; item: Item; rounds: [number, number][]; ask?: "more" | "less" }
   | { type: "pick"; item: Item; layout: "scatter" | "dice" | "frame5"; rounds: number[] }
+  | { type: "balloons"; mode: "count" | "give"; rounds: number[] }
+  | { type: "feed"; rounds: number[] }
+  | { type: "memory"; rounds: number[][] }
   | { type: "pattern"; rounds: string[][] }
   | { type: "shapes"; rounds: ShapeName[] }
   | { type: "mixed"; parts: Game[] }
@@ -123,7 +126,8 @@ export const QUESTS: Quest[] = [
     gameName: "Count the modaks",
     game: { type: "mixed", parts: [
       { type: "count", item: "modak", rounds: [3, 4, 5] },
-      { type: "pick", item: "modak", layout: "scatter", rounds: [4, 5] },
+      { type: "balloons", mode: "count", rounds: [4, 5] },
+      { type: "pick", item: "modak", layout: "scatter", rounds: [5, 6] },
       { type: "count", item: "modak", rounds: [6, 7] },
     ] },
     physical: { title: "Count real things", steps: ["Put 4-7 small things in a row.", "Medhu touches each one and counts.", "Ask \"So how many?\""] },
@@ -147,6 +151,7 @@ export const QUESTS: Quest[] = [
     gameName: "Flash!",
     game: { type: "mixed", parts: [
       { type: "flash", item: "modak", layout: "scatter", rounds: [2, 1, 3] },
+      { type: "memory", rounds: [[1, 2, 3]] },
       { type: "pick", item: "modak", layout: "dice", rounds: [2, 3] },
       { type: "flash", item: "modak", layout: "scatter", rounds: [3, 2, 3] },
     ] },
@@ -169,9 +174,10 @@ export const QUESTS: Quest[] = [
     talk: "Ask Medhu: \"Give me exactly 3 spoons.\" Did he stop at 3?",
     gameName: "Modak shop",
     game: { type: "mixed", parts: [
-      { type: "giveN", item: "modak", rounds: [3, 4, 5] },
-      { type: "pick", item: "modak", layout: "scatter", rounds: [5, 6] },
-      { type: "giveN", item: "modak", rounds: [6, 8] },
+      { type: "feed", rounds: [3, 4] },
+      { type: "giveN", item: "modak", rounds: [4, 5] },
+      { type: "balloons", mode: "give", rounds: [5, 6] },
+      { type: "giveN", item: "modak", rounds: [7, 8] },
     ] },
     physical: { title: "Real shop", steps: ["Make a pile of 15 small things.", "Say: \"I want 6, please!\"", "Did he stop at 6? Try 4, 7, 8."] },
     mistake: { item: "modak", shown: 6, claim: 5 },
@@ -194,6 +200,7 @@ export const QUESTS: Quest[] = [
     gameName: "Flash!",
     game: { type: "mixed", parts: [
       { type: "flash", item: "modak", layout: "dice", rounds: [4, 5, 3] },
+      { type: "memory", rounds: [[2, 4, 5], [3, 4, 5, 1]] },
       { type: "pick", item: "modak", layout: "dice", rounds: [4, 5] },
       { type: "flash", item: "modak", layout: "scatter", rounds: [4, 5, 4] },
     ] },
@@ -241,6 +248,7 @@ export const QUESTS: Quest[] = [
     gameName: "Windy modaks",
     game: { type: "mixed", parts: [
       { type: "conserve", item: "modak", rounds: [4, 5] },
+      { type: "balloons", mode: "count", rounds: [6] },
       { type: "pick", item: "modak", layout: "scatter", rounds: [6, 5] },
       { type: "conserve", item: "modak", rounds: [6, 7] },
     ] },
@@ -289,6 +297,7 @@ export const QUESTS: Quest[] = [
     gameName: "Dice flash",
     game: { type: "mixed", parts: [
       { type: "flash", item: "modak", layout: "dice", rounds: [3, 4, 2] },
+      { type: "memory", rounds: [[3, 5, 6], [1, 4, 5, 6]] },
       { type: "pick", item: "modak", layout: "dice", rounds: [5, 6] },
       { type: "flash", item: "modak", layout: "dice", rounds: [6, 5, 4, 6] },
     ] },
@@ -347,7 +356,8 @@ export const QUESTS: Quest[] = [
     gameName: "Party challenge",
     game: { type: "mixed", parts: [
       { type: "flash", item: "modak", layout: "scatter", rounds: [4, 5] },
-      { type: "giveN", item: "modak", rounds: [7] },
+      { type: "feed", rounds: [7] },
+      { type: "memory", rounds: [[2, 4, 5, 6]] },
       { type: "compare", item: "modak", ask: "less", rounds: [[6, 7]] },
       { type: "pick", item: "modak", layout: "frame5", rounds: [4] },
       { type: "flash", item: "modak", layout: "dice", rounds: [6] },

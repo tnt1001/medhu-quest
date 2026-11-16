@@ -4,8 +4,8 @@ import type { Game } from "@/content/quests";
 const ROUND: Record<string, Game> = {
   C2: { type: "count", item: "modak", rounds: [5] },
   S1: { type: "flash", item: "modak", layout: "scatter", rounds: [3] },
-  S2: { type: "flash", item: "modak", layout: "scatter", rounds: [4] },
-  C3: { type: "giveN", item: "modak", rounds: [5] },
+  S2: { type: "memory", rounds: [[2, 4, 5]] },
+  C3: { type: "feed", rounds: [5] },
   P1: { type: "flash", item: "modak", layout: "frame5", rounds: [4] },
   C4: { type: "conserve", item: "modak", rounds: [5] },
   R2: { type: "compare", item: "modak", rounds: [[4, 6]] },

@@ -8,6 +8,7 @@ import { P } from "@/lib/phrases";
 import { NumberChoices, Progress, Scattered, emptyResult, merge, scatter, shuffle, type Result } from "./common";
 import { ConserveDemo, CountDemo, MatchDemo, PatternDemo, ShapeDemo } from "@/components/Learn";
 import Companion from "@/components/Companion";
+import { BalloonGame, FeedGame, MemoryGame } from "./MoreGames";
 
 type Done = (r: Result) => void;
 
@@ -453,6 +454,9 @@ const HINTS: Record<string, string> = {
   conserve: "Remember the row. Did anyone add or take away?",
   compare: "Look carefully, or pair them up!",
   pick: "Count each plate, or use your super eyes!",
+  balloons: "Count as you pop!",
+  feed: "Count each modak you feed. Stop at the number!",
+  memory: "Flip two cards. Do the dots match the number?",
   pattern: "Say the colours like a song. What comes next?",
   shapes: "Count the corners to check!",
 };
@@ -487,6 +491,9 @@ export function GamePlayer({ game, onDone, guided = false, companion = true }: {
       case "conserve": body = <ConserveGame item={game.item} rounds={game.rounds} onDone={onDone} />; break;
       case "compare": body = <CompareGame item={game.item} rounds={game.rounds} ask={game.ask} onDone={onDone} />; break;
       case "pick": body = <PickGame item={game.item} layout={game.layout} rounds={game.rounds} onDone={onDone} />; break;
+      case "balloons": body = <BalloonGame mode={game.mode} rounds={game.rounds} onDone={onDone} guided={guided} />; break;
+      case "feed": body = <FeedGame rounds={game.rounds} onDone={onDone} guided={guided} />; break;
+      case "memory": body = <MemoryGame rounds={game.rounds} onDone={onDone} />; break;
       case "pattern": body = <PatternGame rounds={game.rounds} onDone={onDone} />; break;
       case "shapes": body = <ShapesGame rounds={game.rounds} onDone={onDone} />; break;
       case "check": body = <CheckGame items={game.items} onDone={onDone} />; break;
