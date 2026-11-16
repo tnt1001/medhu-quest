@@ -1,7 +1,6 @@
 import { GaneshaArt, KaaluArt, MooshakArt } from "@/components/Cast";
 
-// Round avatar portraits. Gods and Mooshak are drawn; Marvel heroes are shown
-// as generic emblems with their name (their likeness is not drawn).
+// Round avatar portraits for the cast: Mooshak, Kaalu, Medhu and the gods.
 
 const Ring = ({ size, bg, children }: { size: number; bg: string; children: React.ReactNode }) => (
   <div style={{ width: size, height: size, borderRadius: "50%", background: bg, border: `${Math.max(2, size / 22)}px solid white`, boxShadow: "0 3px 0 rgba(0,0,0,.12)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -115,44 +114,6 @@ export function MedhuHero({ size = 90 }: { size?: number }) {
   );
 }
 
-// Generic emblems for the Marvel heroes.
-function Emblem({ kind }: { kind: "web" | "bolt" | "shield" | "fist" | "hammer" }) {
-  return (
-    <svg viewBox="0 0 100 100" width="70%" height="70%">
-      {kind === "web" && (
-        <g stroke="white" strokeWidth="3" fill="none">
-          {[0, 45, 90, 135].map((a) => <line key={a} x1={50 - 42 * Math.cos((a * Math.PI) / 180)} y1={50 - 42 * Math.sin((a * Math.PI) / 180)} x2={50 + 42 * Math.cos((a * Math.PI) / 180)} y2={50 + 42 * Math.sin((a * Math.PI) / 180)} />)}
-          {[14, 28, 42].map((r) => <circle key={r} cx="50" cy="50" r={r} />)}
-        </g>
-      )}
-      {kind === "bolt" && <path d="M56 6 L22 56 L46 56 L38 94 L78 40 L52 40 Z" fill="#f2c230" stroke="white" strokeWidth="3" strokeLinejoin="round" />}
-      {kind === "shield" && <path d="M50 8 L84 20 Q84 70 50 92 Q16 70 16 20 Z" fill="white" opacity=".95" />}
-      {kind === "fist" && (
-        <g fill="white">
-          <rect x="24" y="30" width="52" height="40" rx="14" />
-          {[30, 42, 54, 66].map((x) => <rect key={x} x={x - 6} y="22" width="12" height="18" rx="6" />)}
-          <rect x="34" y="66" width="32" height="22" rx="6" />
-        </g>
-      )}
-      {kind === "hammer" && (
-        <g fill="white">
-          <rect x="18" y="14" width="64" height="30" rx="6" />
-          <rect x="44" y="40" width="12" height="50" rx="5" />
-        </g>
-      )}
-    </svg>
-  );
-}
-
-const MARVEL: Record<string, { kind: "web" | "bolt" | "shield" | "fist" | "hammer"; bg: string }> = {
-  "Spider-Man": { kind: "web", bg: "#c62828" },
-  "Iron Man": { kind: "bolt", bg: "#8e1b1b" },
-  "Captain America": { kind: "shield", bg: "#1565c0" },
-  Hulk: { kind: "fist", bg: "#2e7d32" },
-  Thor: { kind: "hammer", bg: "#455a64" },
-  Thanos: { kind: "fist", bg: "#6a1b9a" },
-};
-
 export function Avatar({ name, size = 56 }: { name: string; size?: number }) {
   if (name === "Mooshak") return <Ring size={size} bg="#fff1dd"><div style={{ marginTop: size * 0.12 }}><MooshakArt size={size * 0.95} mood="happy" /></div></Ring>;
   if (name === "Ganesha") return <Ring size={size} bg="#ffe3b8"><div style={{ marginTop: size * 0.32 }}><GaneshaArt size={size * 1.05} /></div></Ring>;
@@ -163,8 +124,6 @@ export function Avatar({ name, size = 56 }: { name: string; size?: number }) {
   if (name === "Durga") return <Ring size={size} bg="#fde4ec"><Durga /></Ring>;
   if (name === "Shiva") return <Ring size={size} bg="#e3f2fd"><Shiva /></Ring>;
   if (name === "Ram") return <Ring size={size} bg="#e8f5e9"><Ram /></Ring>;
-  const m = MARVEL[name];
-  if (m) return <Ring size={size} bg={m.bg}><Emblem kind={m.kind} /></Ring>;
   const initials = name.split(/[\s-]+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return <Ring size={size} bg="#8d6e63"><span style={{ color: "white", fontWeight: 900, fontSize: size * 0.36 }}>{initials}</span></Ring>;
 }

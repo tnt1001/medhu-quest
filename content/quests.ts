@@ -72,9 +72,9 @@ export interface Arc {
 
 export const ARCS: Arc[] = [
   { id: 1, title: "The Modak Mission", costars: "Lord Ganesha + Mooshak", days: [1, 12], trophy: "Golden Modak" },
-  { id: 2, title: "The Great Leap", costars: "Lord Hanuman", days: [13, 24], trophy: "Hanuman's Mace" },
-  { id: 3, title: "Hero Squad", costars: "Superheroes", days: [25, 36], trophy: "Hero Shield" },
-  { id: 4, title: "The Butter Thief", costars: "Lord Krishna", days: [37, 48], trophy: "Krishna's Flute" },
+  { id: 2, title: "Ram vs Ravan: Battle of Lanka", costars: "Lord Ram + Lord Hanuman", days: [13, 24], trophy: "Ram's Golden Bow" },
+  { id: 3, title: "Durga vs Mahishasura", costars: "Goddess Durga", days: [25, 36], trophy: "Durga's Lion" },
+  { id: 4, title: "Krishna vs Kaliya", costars: "Lord Krishna", days: [37, 48], trophy: "Krishna's Flute" },
 ];
 
 export const CARDS = [
@@ -82,14 +82,10 @@ export const CARDS = [
   { name: "Ganesha", world: "Mythology", color: "#ef6c00" },
   { name: "Kaalu", world: "Cheeky crow", color: "#2b2f38" },
   { name: "Hanuman", world: "Mythology", color: "#e65100" },
-  { name: "Krishna", world: "Mythology", color: "#283593" },
   { name: "Durga", world: "Mythology", color: "#c2185b" },
+  { name: "Krishna", world: "Mythology", color: "#283593" },
   { name: "Shiva", world: "Mythology", color: "#455a64" },
   { name: "Ram", world: "Mythology", color: "#00838f" },
-  { name: "Spider-Man", world: "Superhero", color: "#d32f2f" },
-  { name: "Iron Man", world: "Superhero", color: "#b71c1c" },
-  { name: "Hulk", world: "Superhero", color: "#2e7d32" },
-  { name: "Thor", world: "Superhero", color: "#5d4037" },
 ];
 
 export const STARS_PER_CARD = 10;

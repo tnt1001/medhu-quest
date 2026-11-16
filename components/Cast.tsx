@@ -1,7 +1,5 @@
 import { Avatar } from "@/components/Avatars";
 // The cartoon cast, drawn as SVG so every character looks the same everywhere.
-// Marvel heroes are named in stories but never drawn; their presence is shown
-// through props (a web, motion lines), not their likeness.
 
 type Mood = "happy" | "confused" | "excited" | "thinking";
 
@@ -92,7 +90,7 @@ export function GaneshaArt({ size = 150, holding = true }: { size?: number; hold
   );
 }
 
-// A spider-web prop: tells the reader the web-slinging hero is around without drawing him.
+// A web prop (kept for possible future scenes).
 export function WebArt({ size = 120, children }: { size?: number; children?: React.ReactNode }) {
   const spokes = Array.from({ length: 8 }, (_, k) => (k * Math.PI) / 4);
   return (
