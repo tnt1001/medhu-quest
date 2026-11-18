@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ItemArt } from "@/components/Art";
-import { GaneshaArt, KaaluArt } from "@/components/Cast";
+import { GaneshaArt, HanumanArt, KaaluArt, RamArt } from "@/components/Cast";
 import { Avatar } from "@/components/Avatars";
 import { SceneView } from "@/components/Scene";
 import LockModal from "@/components/LockModal";
@@ -35,10 +35,17 @@ export default function Home() {
   const done = new Set(state?.completed ?? []);
   const next = QUESTS.find((q) => !done.has(q.day)) ?? null;
   const isOpen = (q: Quest) => q.day === 1 || done.has(q.day) || done.has(q.day - 1);
-  const arc = ARCS[0];
+  const lastDay = QUESTS[QUESTS.length - 1].day;
+  const built = ARCS.filter((a) => a.days[0] <= lastDay);
+  const arc = built.find((a) => next && next.day >= a.days[0] && next.day <= a.days[1]) ?? built[built.length - 1];
+  const [showArc, setShowArc] = useState<number | null>(null);
+  const viewArc = ARCS.find((a) => a.id === showArc) ?? arc;
+  const arcQuests = QUESTS.filter((q) => q.day >= viewArc.days[0] && q.day <= viewArc.days[1]);
+  const arcDone = arcQuests.filter((q) => done.has(q.day)).length;
   const stars = state?.stars ?? 0;
   const toCard = STARS_PER_CARD - (stars % STARS_PER_CARD);
-  const pct = Math.round((done.size / QUESTS.length) * 100);
+  const arcAll = QUESTS.filter((q) => q.day >= arc.days[0] && q.day <= arc.days[1]);
+  const pct = Math.round((arcAll.filter((q) => done.has(q.day)).length / arcAll.length) * 100);
   const lockedBy = locked ? next ?? QUESTS[0] : null;
 
   return (
@@ -60,16 +67,25 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="arc-hero">
-        <div style={{ position: "absolute", right: -6, bottom: -6 }}><GaneshaArt size={112} /></div>
-        <div className="kaalu-fly" style={{ position: "absolute", right: 100, top: 6 }}><KaaluArt size={52} /></div>
+      <div className={`arc-hero arc-${arc.id}`}>
+        {arc.id === 1 ? (
+          <>
+            <div style={{ position: "absolute", right: -6, bottom: -6 }}><GaneshaArt size={112} /></div>
+            <div className="kaalu-fly" style={{ position: "absolute", right: 100, top: 6 }}><KaaluArt size={52} /></div>
+          </>
+        ) : (
+          <>
+            <div style={{ position: "absolute", right: 58, bottom: -8 }}><HanumanArt size={84} /></div>
+            <div style={{ position: "absolute", right: -10, bottom: -10 }}><RamArt size={98} /></div>
+          </>
+        )}
         <div style={{ position: "relative", maxWidth: "62%" }}>
           <div className="eyebrow" style={{ color: "#fff3dd" }}>Arc {arc.id} · {arc.costars}</div>
           <div style={{ fontSize: 23, fontWeight: 900, color: "white", lineHeight: 1.1, margin: "4px 0 10px" }}>{arc.title}</div>
           <div style={{ height: 10, background: "rgba(255,255,255,.35)", borderRadius: 99, overflow: "hidden" }}>
             <div style={{ width: `${pct}%`, height: "100%", background: "white" }} />
           </div>
-          <div style={{ fontSize: 12, marginTop: 6, fontWeight: 800, color: "#fff3dd" }}>{done.size} of {QUESTS.length} games · {toCard} ★ to next hero card</div>
+          <div style={{ fontSize: 12, marginTop: 6, fontWeight: 800, color: "#fff3dd" }}>{arcAll.filter((q) => done.has(q.day)).length} of {arcAll.length} games · {toCard} ★ to next hero card</div>
         </div>
       </div>
 
@@ -88,9 +104,18 @@ export default function Home() {
         </Link>
       )}
 
-      <div className="eyebrow" style={{ margin: "18px 0 8px" }}>All games</div>
+      <div className="row spread" style={{ margin: "18px 0 8px" }}>
+        <div className="eyebrow">Arc {viewArc.id} games · {arcDone}/{arcQuests.length}</div>
+        {built.length > 1 && (
+          <div className="row" style={{ gap: 4 }}>
+            {built.map((a) => (
+              <button key={a.id} className={`pill ${a.id === viewArc.id ? "pill-on" : ""}`} style={{ border: 0, cursor: "pointer", fontWeight: 800 }} onClick={() => setShowArc(a.id)}>Arc {a.id}</button>
+            ))}
+          </div>
+        )}
+      </div>
       <div className="tiles">
-        {QUESTS.map((q) => {
+        {arcQuests.map((q) => {
           const open = isOpen(q);
           const finished = done.has(q.day);
           const current = next?.day === q.day;
@@ -119,7 +144,7 @@ export default function Home() {
       </div>
 
       <div className="eyebrow" style={{ margin: "22px 0 8px" }}>Coming next</div>
-      {ARCS.slice(1).map((a) => (
+      {ARCS.filter((a) => a.days[0] > arc.days[1]).map((a) => (
         <button key={a.id} className="arc-locked" onClick={() => setLocked({ ...QUESTS[QUESTS.length - 1], day: a.days[0], title: `Arc ${a.id}: ${a.title}` } as Quest)}>
           <Lock />
           <div style={{ textAlign: "left" }}>
@@ -136,7 +161,7 @@ export default function Home() {
 
       {locked && lockedBy && (
         <LockModal
-          title={locked.day > QUESTS.length ? locked.title : `Game ${locked.day}`}
+          title={locked.title.startsWith("Arc ") ? locked.title : `Game ${locked.day}`}
           need={lockedBy.title}
           needDay={lockedBy.day}
           onClose={() => setLocked(null)}

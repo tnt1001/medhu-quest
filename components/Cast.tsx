@@ -153,3 +153,111 @@ export function KaaluArt({ size = 80 }: { size?: number }) {
     </svg>
   );
 }
+
+// ---------- Arc 2: Battle of Lanka ----------
+
+export function RamArt({ size = 140 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 1.15} viewBox="0 0 140 160" aria-label="Lord Ram">
+      <ellipse cx="70" cy="154" rx="40" ry="5" fill="rgba(0,0,0,.12)" />
+      {/* bow */}
+      <path d="M118 30 Q142 82 118 136" stroke="#8a3f15" strokeWidth="6" fill="none" strokeLinecap="round" />
+      <path d="M118 30 L118 136" stroke="#e8d9c5" strokeWidth="1.5" />
+      {/* body */}
+      <path d="M40 150 L46 104 Q70 92 94 104 L100 150 Z" fill="#f2c230" />
+      <path d="M44 128 H96" stroke="#d64545" strokeWidth="5" />
+      <rect x="50" y="86" width="40" height="26" rx="10" fill="#5b8fd6" />
+      <path d="M50 92 Q70 104 90 92" stroke="#f2c230" strokeWidth="4" fill="none" />
+      <ellipse cx="38" cy="104" rx="8" ry="16" fill="#5b8fd6" transform="rotate(15 38 104)" />
+      <ellipse cx="102" cy="100" rx="8" ry="16" fill="#5b8fd6" transform="rotate(-25 102 100)" />
+      <circle cx="112" cy="86" r="7" fill="#7ea7e6" />
+      {/* quiver */}
+      <rect x="24" y="70" width="10" height="34" rx="4" fill="#8a3f15" transform="rotate(-18 29 87)" />
+      <path d="M22 66 l4 -8 l4 8 M30 64 l4 -8 l4 8" stroke="#d64545" strokeWidth="3" fill="none" />
+      {/* head */}
+      <circle cx="70" cy="62" r="24" fill="#5b8fd6" />
+      <path d="M46 58 Q48 36 70 36 Q92 36 94 58 Q84 46 70 48 Q56 46 46 58 Z" fill="#1d1d3a" />
+      <path d="M50 42 L54 14 L62 28 L70 4 L78 28 L86 14 L90 42 Q70 34 50 42 Z" fill="#f2c230" stroke="#c99a10" strokeWidth="1.5" />
+      <circle cx="70" cy="22" r="4" fill="#d64545" />
+      <path d="M66 50 L70 44 L74 50" stroke="#d64545" strokeWidth="2.5" fill="none" />
+      <ellipse cx="61" cy="62" rx="3.5" ry="4" fill="#1d1d3a" /><ellipse cx="79" cy="62" rx="3.5" ry="4" fill="#1d1d3a" />
+      <circle cx="62" cy="60.5" r="1.2" fill="white" /><circle cx="80" cy="60.5" r="1.2" fill="white" />
+      <path d="M62 74 Q70 80 78 74" stroke="#1d1d3a" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <circle cx="54" cy="70" r="4" fill="#89b0ec" /><circle cx="86" cy="70" r="4" fill="#89b0ec" />
+    </svg>
+  );
+}
+
+// Ravan: ten crowned heads, drawn funny-grumpy rather than scary.
+export function RavanArt({ size = 170 }: { size?: number }) {
+  const heads = [-4, -3, -2, -1, 1, 2, 3, 4];
+  return (
+    <svg width={size} height={size * 0.9} viewBox="0 0 200 180" aria-label="Ravan">
+      <ellipse cx="100" cy="174" rx="44" ry="5" fill="rgba(0,0,0,.12)" />
+      <path d="M58 172 L66 114 Q100 100 134 114 L142 172 Z" fill="#7b1f3a" />
+      <path d="M62 140 H138" stroke="#f2c230" strokeWidth="5" />
+      <ellipse cx="54" cy="122" rx="10" ry="18" fill="#a5623f" transform="rotate(20 54 122)" />
+      <ellipse cx="146" cy="122" rx="10" ry="18" fill="#a5623f" transform="rotate(-20 146 122)" />
+      {heads.map((k) => {
+        const x = 100 + k * 21, y = 72 + Math.abs(k) * 3, r = 13;
+        return (
+          <g key={k}>
+            <circle cx={x} cy={y} r={r} fill="#b97a52" />
+            <path d={`M${x - 9} ${y - 10} L${x - 6} ${y - 20} L${x} ${y - 13} L${x + 6} ${y - 20} L${x + 9} ${y - 10} Z`} fill="#f2c230" />
+            <path d={`M${x - 7} ${y - 4} L${x - 2} ${y - 2} M${x + 7} ${y - 4} L${x + 2} ${y - 2}`} stroke="#2b2118" strokeWidth="1.8" />
+            <circle cx={x - 4} cy={y + 1} r="1.8" fill="#2b2118" /><circle cx={x + 4} cy={y + 1} r="1.8" fill="#2b2118" />
+            <path d={`M${x - 5} ${y + 7} Q${x} ${y + 4} ${x + 5} ${y + 7}`} stroke="#2b2118" strokeWidth="1.6" fill="none" />
+          </g>
+        );
+      })}
+      {/* the big middle head */}
+      <circle cx="100" cy="74" r="22" fill="#b97a52" />
+      <path d="M80 58 L84 30 L92 46 L100 22 L108 46 L116 30 L120 58 Q100 50 80 58 Z" fill="#f2c230" stroke="#c99a10" strokeWidth="1.5" />
+      <circle cx="100" cy="40" r="4" fill="#2e9d5b" />
+      <path d="M86 66 L96 70 M114 66 L104 70" stroke="#2b2118" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="92" cy="75" r="3.5" fill="#2b2118" /><circle cx="108" cy="75" r="3.5" fill="#2b2118" />
+      <path d="M86 86 Q93 82 100 86 Q107 82 114 86" stroke="#2b2118" strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M92 92 Q100 88 108 92" stroke="#2b2118" strokeWidth="2" fill="none" />
+    </svg>
+  );
+}
+
+export function HanumanArt({ size = 140 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 1.1} viewBox="0 0 140 154" aria-label="Lord Hanuman">
+      <ellipse cx="70" cy="148" rx="40" ry="5" fill="rgba(0,0,0,.12)" />
+      <path d="M100 130 Q132 128 128 96 Q126 80 114 88" stroke="#e65100" strokeWidth="6" fill="none" strokeLinecap="round" />
+      <path d="M44 146 L50 104 Q70 94 90 104 L96 146 Z" fill="#d64545" />
+      <path d="M48 124 H92" stroke="#f2c230" strokeWidth="5" />
+      <ellipse cx="70" cy="100" rx="22" ry="16" fill="#ef6c00" />
+      {/* mace */}
+      <rect x="98" y="52" width="7" height="58" rx="3" fill="#c99a10" transform="rotate(18 101 81)" />
+      <circle cx="112" cy="48" r="15" fill="#f2c230" stroke="#c99a10" strokeWidth="2" />
+      <ellipse cx="38" cy="106" rx="8" ry="16" fill="#ef6c00" transform="rotate(18 38 106)" />
+      <ellipse cx="100" cy="100" rx="8" ry="16" fill="#ef6c00" transform="rotate(-30 100 100)" />
+      <circle cx="40" cy="58" r="11" fill="#e65100" /><circle cx="40" cy="58" r="6" fill="#ffccbc" />
+      <circle cx="100" cy="58" r="11" fill="#e65100" /><circle cx="100" cy="58" r="6" fill="#ffccbc" />
+      <circle cx="70" cy="60" r="26" fill="#ef6c00" />
+      <ellipse cx="70" cy="70" rx="17" ry="13" fill="#ffccbc" />
+      <ellipse cx="62" cy="57" rx="5.5" ry="6" fill="#ffccbc" /><ellipse cx="78" cy="57" rx="5.5" ry="6" fill="#ffccbc" />
+      <circle cx="62" cy="58" r="3" fill="#2b2118" /><circle cx="78" cy="58" r="3" fill="#2b2118" />
+      <ellipse cx="70" cy="68" rx="4" ry="2.5" fill="#bf6b4e" />
+      <path d="M62 75 Q70 81 78 75" stroke="#8a3f15" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <path d="M48 38 L54 18 L62 30 L70 12 L78 30 L86 18 L92 38 Q70 32 48 38 Z" fill="#f2c230" stroke="#c99a10" strokeWidth="1.5" />
+      <circle cx="70" cy="24" r="3.5" fill="#d64545" />
+    </svg>
+  );
+}
+
+export function VanaraArt({ size = 40 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-label="vanara">
+      <circle cx="11" cy="22" r="6" fill="#8d6e63" /><circle cx="37" cy="22" r="6" fill="#8d6e63" />
+      <circle cx="24" cy="24" r="15" fill="#8d6e63" />
+      <ellipse cx="24" cy="29" rx="10" ry="8" fill="#ffe0c2" />
+      <circle cx="19" cy="22" r="2.4" fill="#2b2118" /><circle cx="29" cy="22" r="2.4" fill="#2b2118" />
+      <path d="M20 32 Q24 35 28 32" stroke="#2b2118" strokeWidth="1.6" fill="none" />
+      <path d="M14 12 Q24 4 34 12" stroke="#d64545" strokeWidth="3" fill="none" />
+    </svg>
+  );
+}

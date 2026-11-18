@@ -2,13 +2,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ItemArt } from "@/components/Art";
-import { CardPortrait, MooshakArt } from "@/components/Cast";
+import { CardPortrait, MooshakArt, RamArt } from "@/components/Cast";
 import { Avatar } from "@/components/Avatars";
 import { SceneView } from "@/components/Scene";
 import { DemoView } from "@/components/Learn";
 import { EasyWin, GamePlayer, MistakeRound, sliceGame } from "@/components/games/Games";
 import { warmupFor } from "@/lib/warmup";
-import type { Result } from "@/components/games/common";
+import { setProgressItem, type Result } from "@/components/games/common";
 import MuteToggle from "@/components/MuteToggle";
 import MusicToggle from "@/components/MusicToggle";
 import { ARCS, CARDS, QUESTS, STARS_PER_CARD, displayName, type Quest } from "@/content/quests";
@@ -81,7 +81,8 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
   }, [quest.day]);
   const hasLearn = quest.learn.length > 0;
 
-  const warm = warmupFor(quest.review);
+  setProgressItem(quest.day >= 13 ? "arrow" : "modak");
+  const warm = warmupFor(quest.review, quest.day);
   const guidedGame = hasLearn ? sliceGame(quest.game, 0, 1) : null;
   const mainGame = (guidedGame && quest.game.type !== "mixed" ? sliceGame(quest.game, 1) : quest.game) ?? quest.game;
   const has = { warm: !!warm, learn: hasLearn, try: !!guidedGame };
@@ -127,7 +128,12 @@ export default function QuestPlayer({ quest }: { quest: Quest }) {
     if (step === "physical") say(P.phoneDown);
     if (step === "reward") { sfx.win(); setTimeout(() => say(P.newPower(quest.power.name)), 700); }
   }, [step, quest.power.name]);
-  useEffect(() => { preload(quest.story[0].t); return () => stop(); }, [quest.story]);
+  // Ask for every line of this chapter as soon as it opens, so the voices are ready
+  // (generated and cached) by the time each slide needs them.
+  useEffect(() => {
+    [...quest.story.map((p) => p.t), ...quest.learn.map((l) => l.t)].forEach((t, k) => setTimeout(() => preload(t), k * 150));
+    return () => stop();
+  }, [quest]);
   useEffect(() => { if (typeof window !== "undefined") window.scrollTo({ top: 0 }); }, [step, panel, lstep]);
   useEffect(() => { if (step === "story" && panel > 0) sfx.swish(); }, [step, panel]);
 
@@ -390,7 +396,7 @@ function RewardScreen({ quest, reward }: { quest: Quest; reward: { stars: number
       )}
       {arc && (
         <div className="card pop" style={{ margin: "16px auto", maxWidth: 320, borderColor: "#f2c230", background: "#fffbea" }}>
-          <ItemArt item="modak" size={60} color="#f2c230" />
+          {arc.id === 1 ? <ItemArt item="modak" size={60} color="#f2c230" /> : <RamArt size={80} />}
           <p className="title">Trophy: {arc.trophy}!</p>
           <p className="muted" style={{ margin: 0 }}>You finished {arc.title}.</p>
         </div>

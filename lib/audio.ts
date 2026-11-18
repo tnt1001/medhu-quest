@@ -8,9 +8,8 @@ let el: HTMLAudioElement | null = null;
 let unlocked = false;
 let aiAvailable = false;
 let aiTag = "v0";
-if (typeof window !== "undefined") {
+const statusReady: Promise<void> = typeof window === "undefined" ? Promise.resolve() :
   fetch("/api/tts?status=1", { cache: "no-store" }).then((r) => r.json()).then((d) => { aiAvailable = !!d.configured; if (d.tag) aiTag = d.tag; }).catch(() => {});
-}
 let ctx: AudioContext | null = null;
 
 const SILENT = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//NwwAAAAAAAAAAAAEluZm8AAAAPAAAABgAAAykAWlpaWlpaWlpaWlpaWlpaWnt7e3t7e3t7e3t7e3t7e3t7nJycnJycnJycnJycnJycnL29vb29vb29vb29vb29vb293t7e3t7e3t7e3t7e3t7e3t7/////////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQCowAAAAAAAAMpso+sIAAAAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxKMAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NAxKQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEowAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=";
@@ -150,8 +149,13 @@ function sayInner(text: string, voice: Voice): Promise<void> {
       fellBack = true;
       browserSpeak(text).then(resolve);
     };
-    a.onended = () => resolve();
+    a.onended = () => { clearTimeout(slow); resolve(); };
+    // If the AI voice hasn't started within 6s (still being generated), use the phone voice
+    // for this line so the story never sits silent. The AI clip will be ready next time.
+    const slow = setTimeout(() => { if (a.paused || a.currentTime === 0) { a.pause(); fallback(); } }, 6000);
+    a.onplaying = () => clearTimeout(slow);
     a.onerror = () => {
+      clearTimeout(slow);
       // 503 = no ElevenLabs key yet; stop trying for this session.
       fallback();
     };
@@ -162,8 +166,8 @@ function sayInner(text: string, voice: Voice): Promise<void> {
 
 // Warm the browser cache so the next line starts instantly.
 export function preload(text: string, voice: Voice = "narrator") {
-  if (typeof window === "undefined" || !aiAvailable) return;
-  fetch(ttsUrl(text, voice)).catch(() => {});
+  if (typeof window === "undefined") return;
+  statusReady.then(() => { if (aiAvailable) fetch(ttsUrl(text, voice)).catch(() => {}); });
 }
 
 export const sayNumber = (n: number) => say(P.number(n));

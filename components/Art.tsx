@@ -1,5 +1,6 @@
 import { MooshakArt } from "@/components/Cast";
 import type { Item, ShapeName } from "@/content/quests";
+import { VanaraArt } from "@/components/Cast";
 
 export function ItemArt({ item, size = 48, color }: { item: Item; size?: number; color?: string }) {
   if (item === "modak") {
@@ -7,6 +8,24 @@ export function ItemArt({ item, size = 48, color }: { item: Item; size?: number;
       <svg width={size} height={size} viewBox="0 0 48 48" aria-label="modak">
         <path d="M24 4 C30 14 40 22 40 32 C40 40 33 44 24 44 C15 44 8 40 8 32 C8 22 18 14 24 4 Z" fill={color || "#f6d38b"} stroke="#c9963b" strokeWidth="2" />
         <path d="M24 8 L24 42 M17 16 C16 26 16 36 19 43 M31 16 C32 26 32 36 29 43" stroke="#c9963b" strokeWidth="1.6" fill="none" />
+      </svg>
+    );
+  }
+  if (item === "vanara") return <VanaraArt size={size} />;
+  if (item === "stone") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" aria-label="stone">
+        <path d="M6 32 Q4 16 18 10 Q32 4 40 16 Q46 28 38 38 Q24 46 12 40 Q6 37 6 32 Z" fill={color || "#9aa6b2"} stroke="#6b7682" strokeWidth="2" />
+        <path d="M16 18 Q22 14 28 16" stroke="white" strokeWidth="2" opacity=".5" fill="none" />
+      </svg>
+    );
+  }
+  if (item === "arrow") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" aria-label="arrow">
+        <path d="M6 42 L38 10" stroke="#8a3f15" strokeWidth="3.5" strokeLinecap="round" />
+        <path d="M30 8 L42 6 L40 18 Z" fill="#9aa6b2" />
+        <path d="M6 42 L4 34 M6 42 L14 44 M10 38 L8 30 M10 38 L18 40" stroke="#d64545" strokeWidth="2.5" strokeLinecap="round" />
       </svg>
     );
   }

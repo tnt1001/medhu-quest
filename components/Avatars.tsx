@@ -85,7 +85,7 @@ function Ram() {
     <svg viewBox="0 0 100 100" width="100%" height="100%">
       <path d="M84 12 Q100 50 84 88" stroke="#8a3f15" strokeWidth="4" fill="none" />
       <path d="M84 12 L84 88" stroke="#d7ccc8" strokeWidth="1.2" />
-      <circle cx="48" cy="60" r="27" fill="#6fa86f" />
+      <circle cx="48" cy="60" r="27" fill="#5b8fd6" />
       <path d="M21 56 Q22 34 48 34 Q74 34 75 56 Q62 44 48 46 Q34 44 21 56 Z" fill="#1d1d3a" />
       <path d="M26 40 L32 16 L40 30 L48 8 L56 30 L64 16 L70 40 Q48 32 26 40 Z" fill="#f2c230" stroke="#c99a10" strokeWidth="1.2" />
       <circle cx="48" cy="22" r="3.5" fill="#2f6fd6" />
@@ -123,7 +123,7 @@ export function Avatar({ name, size = 56 }: { name: string; size?: number }) {
   if (name === "Krishna") return <Ring size={size} bg="#e8f1ff"><Krishna /></Ring>;
   if (name === "Durga") return <Ring size={size} bg="#fde4ec"><Durga /></Ring>;
   if (name === "Shiva") return <Ring size={size} bg="#e3f2fd"><Shiva /></Ring>;
-  if (name === "Ram") return <Ring size={size} bg="#e8f5e9"><Ram /></Ring>;
+  if (name === "Ram") return <Ring size={size} bg="#e3efff"><Ram /></Ring>;
   const initials = name.split(/[\s-]+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return <Ring size={size} bg="#8d6e63"><span style={{ color: "white", fontWeight: 900, fontSize: size * 0.36 }}>{initials}</span></Ring>;
 }

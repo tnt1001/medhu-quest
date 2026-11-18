@@ -251,3 +251,27 @@ table.t th { font-size: 12px; text-transform: uppercase; letter-spacing: .03em; 
 .mcard.right { background: #d9f5e1; border-color: #2e9d5b; }
 .mcard.wrong { background: #fde2e2; border-color: #d64545; animation: shake .3s; }
 .mcard-back { color: white; font-size: 34px; font-weight: 900; }
+
+/* ---------- Arc 2: Battle of Lanka ---------- */
+.shake { animation: shake .3s 2; }
+.shield-in { animation: shieldIn .5s cubic-bezier(.3,1.5,.5,1) both; }
+@keyframes shieldIn { from { transform: translateX(120%) rotate(20deg); } to { transform: none; } }
+.march-in { animation: marchIn .7s cubic-bezier(.3,1.4,.5,1) both; }
+@keyframes marchIn { from { transform: translateX(160px); opacity: 0; } to { transform: none; opacity: 1; } }
+.march-out > svg { animation: marchOut .9s ease-in both; }
+@keyframes marchOut { to { transform: translateY(-14px) scale(.85); opacity: .28; filter: grayscale(1); } }
+.march-out { position: relative; }
+.march-out::after { content: "✗"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #d64545; font-size: 34px; font-weight: 900; animation: fadeX .9s both; }
+@keyframes fadeX { from { opacity: 0; } to { opacity: 1; } }
+.battlecard { flex: 1; position: relative; border: 4px solid #e8d9c5; border-radius: 20px; padding: 14px 8px 18px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-family: inherit; }
+.battlecard.ram { background: linear-gradient(#e3efff, #fff); border-color: #5b8fd6; }
+.battlecard.ravan { background: linear-gradient(#fbe3ea, #fff); border-color: #7b1f3a; }
+.battlecard .who { font-weight: 800; font-size: 14px; color: #6b5a48; }
+.battlecard .num { font-size: 64px; font-weight: 900; line-height: 1; color: #2b2118; }
+.battlecard.right { background: #e2f5e9; border-color: var(--green, #2e9d5b); }
+.battlecard.wrong { background: #fde2e2; border-color: #d64545; animation: shake .3s; }
+.battlecard .mark { position: absolute; top: 6px; right: 10px; font-size: 26px; font-weight: 900; }
+.battlecard.right .mark { color: #2e9d5b; } .battlecard.wrong .mark { color: #d64545; }
+.ram-bow { animation: bob 2.4s ease-in-out infinite; }
+.arc-hero.arc-2 { background: linear-gradient(135deg, #3b6fc4, #7b1f3a); box-shadow: 0 6px 0 #2a4a86; }
+.pill.pill-on { background: #f28c28; color: white; border-color: #f28c28; }

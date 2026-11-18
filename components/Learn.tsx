@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ItemArt, ShapeArt } from "@/components/Art";
 import { SceneView } from "@/components/Scene";
+import { HanumanArt } from "@/components/Cast";
 import type { Demo, Item } from "@/content/quests";
 import { ENGLISH, HINDI, HINDI_DEV } from "@/content/skills";
 import { sfx } from "@/lib/audio";
@@ -222,6 +223,81 @@ export function NumberDemo({ n }: { n: number }) {
   );
 }
 
+export function Frame10Demo({ n, k }: { n: number; k: number }) {
+  const t = useTicker(n, 600, k);
+  return (
+    <div className="center">
+      <div style={{ display: "inline-grid", gridTemplateColumns: "repeat(5, 46px)", gap: 6, padding: 8, background: "#f6e3c4", borderRadius: 14 }}>
+        {Array.from({ length: 10 }, (_, i) => (
+          <div key={i} style={{ width: 46, height: 46, borderRadius: 8, background: i < 5 && t >= 5 ? "#fff3d6" : "white", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {i < t && <span className="pop"><ItemArt item="arrow" size={34} /></span>}
+          </div>
+        ))}
+      </div>
+      {t >= n ? <BigNum n={n} label={n > 5 ? `A full row is 5. 5 and ${n - 5} more is ${n}!` : `${n}`} /> : <div style={{ height: 82 }} />}
+    </div>
+  );
+}
+
+export function HopDemo({ from, by, k }: { from: number; by: number; k: number }) {
+  const steps = Math.abs(by);
+  const t = useTicker(steps, 900, k);
+  const dir = by > 0 ? 1 : -1;
+  const at = from + t * dir;
+  const lo = Math.max(0, Math.min(from, from + by) - 1);
+  const nums = Array.from({ length: 8 }, (_, i) => lo + i);
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 4, background: "linear-gradient(#7cc4f0, #3b8fd0)", borderRadius: 18, padding: "54px 6px 12px" }}>
+        {nums.map((n) => (
+          <div key={n} style={{ position: "relative", flex: 1, aspectRatio: "1 / .8", borderRadius: "46% 54% 40% 60%", background: n === at ? "#2e9d5b" : "#c3ccd6", color: n === at ? "white" : "#2b2118", fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 0 #6b7682" }}>
+            {n}
+            {n === at && <span style={{ position: "absolute", bottom: "75%", left: "50%", transform: "translateX(-50%)" }}><HanumanArt size={44} /></span>}
+          </div>
+        ))}
+      </div>
+      {t >= steps ? <BigNum n={from + by} label={by > 0 ? `${from} and ${by} more is ${from + by}!` : `One less than ${from} is ${from + by}!`} /> : <div style={{ height: 82 }} />}
+    </div>
+  );
+}
+
+export function HideDemo({ item, total, shown, k }: { item: Item; total: number; shown: number; k: number }) {
+  const t = useTicker(3, 1300, k);
+  const hidden = total - shown;
+  const sz = total > 6 ? 26 : 40;
+  return (
+    <div className="center">
+      <div className="row" style={{ justifyContent: "center", gap: 12, minHeight: 90, alignItems: "center" }}>
+        <div className="row" style={{ gap: 3, flexWrap: "wrap", maxWidth: "60%", justifyContent: "center" }}>{Array.from({ length: shown }, (_, i) => <ItemArt key={i} item={item} size={sz} />)}</div>
+        <div style={{ position: "relative", display: "flex", gap: 4, padding: 4, borderRadius: 14, outline: t >= 2 ? "3px dashed #2e9d5b" : "none" }}>
+          {Array.from({ length: hidden }, (_, i) => <ItemArt key={i} item={item} size={sz} />)}
+          {t === 1 && <div className="shield-in" style={{ position: "absolute", inset: -6, borderRadius: 22, background: "radial-gradient(circle at 40% 35%, #ffe082, #f2a900 60%, #c98a00)", border: "4px solid #8a5a00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, fontWeight: 900, color: "#8a3f15" }}>?</div>}
+        </div>
+      </div>
+      {t >= 2 ? <BigNum n={hidden} label={`${shown} and ${hidden} make ${total}. ${hidden} were hiding!`} /> : <div style={{ height: 82 }} />}
+    </div>
+  );
+}
+
+export function ArmyDemo({ item, op, a, b, k }: { item: Item; op: "add" | "take"; a: number; b: number; k: number }) {
+  const t = useTicker(2, 1500, k);
+  const n = op === "add" ? a + b : a;
+  const ans = op === "add" ? a + b : a - b;
+  return (
+    <div className="center">
+      <div className="row" style={{ justifyContent: "center", flexWrap: "wrap", gap: 6, minHeight: 90 }}>
+        {Array.from({ length: n }, (_, i) => {
+          const isNew = op === "add" && i >= a;
+          const leaving = op === "take" && i >= a - b;
+          if (isNew && t < 1) return null;
+          return <div key={i} className={isNew ? "march-in" : leaving && t >= 1 ? "march-out" : ""}><ItemArt item={item} size={42} /></div>;
+        })}
+      </div>
+      {t >= 2 ? <BigNum n={ans} label={op === "add" ? `${a} and ${b} more make ${ans}!` : `${a} take away ${b} leaves ${ans}!`} /> : <div style={{ height: 82 }} />}
+    </div>
+  );
+}
+
 export function DemoView({ demo, k }: { demo: Demo; k: number }) {
   switch (demo.type) {
     case "count": return <CountDemo item={demo.item} n={demo.n} k={k} />;
@@ -235,5 +311,9 @@ export function DemoView({ demo, k }: { demo: Demo; k: number }) {
     case "shape": return <ShapeDemo shape={demo.shape} k={k} />;
     case "number": return <NumberDemo n={demo.n} />;
     case "scene": return <SceneView scene={demo.scene} />;
+    case "frame10": return <Frame10Demo n={demo.n} k={k} />;
+    case "hop": return <HopDemo from={demo.from} by={demo.by} k={k} />;
+    case "hide": return <HideDemo item={demo.item} total={demo.total} shown={demo.shown} k={k} />;
+    case "army": return <ArmyDemo item={demo.item} op={demo.op} a={demo.a} b={demo.b} k={k} />;
   }
 }

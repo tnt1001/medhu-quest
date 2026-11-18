@@ -1,4 +1,4 @@
-import { GaneshaArt, KaaluArt, MooshakArt, SpeedLines, Toran, WebArt } from "@/components/Cast";
+import { GaneshaArt, HanumanArt, KaaluArt, MooshakArt, RamArt, RavanArt, SpeedLines, Toran, WebArt } from "@/components/Cast";
 import { ItemArt } from "@/components/Art";
 import type { Scene as SceneSpec } from "@/content/quests";
 
@@ -8,6 +8,9 @@ const BG: Record<SceneSpec["bg"], { sky: string; ground: string }> = {
   night: { sky: "linear-gradient(#1f2a5a, #3b4a8a)", ground: "#2c335c" },
   kitchen: { sky: "linear-gradient(#fff3c4, #fffaf0)", ground: "#d7a86e" },
   sky: { sky: "linear-gradient(#9fd4ff, #e5f4ff)", ground: "#9bd38b" },
+  sea: { sky: "linear-gradient(#ffd7a8, #bfe6ff)", ground: "#3b8fd0" },
+  lanka: { sky: "linear-gradient(#ff9e7a, #ffd6a8)", ground: "#c7a15a" },
+  camp: { sky: "linear-gradient(#bfe3ff, #f1fbff)", ground: "#7cbf6a" },
 };
 
 function Backdrop({ bg }: { bg: SceneSpec["bg"] }) {
@@ -39,6 +42,47 @@ function Backdrop({ bg }: { bg: SceneSpec["bg"] }) {
         {[[10, 15], [25, 30], [45, 12], [62, 26], [80, 40], [35, 45]].map(([x, y], k) => (
           <div key={k} className="twinkle" style={{ position: "absolute", left: `${x}%`, top: `${y}%`, width: 4, height: 4, borderRadius: "50%", background: "white", animationDelay: `${k * 0.3}s` }} />
         ))}
+      </>
+    );
+  }
+  if (bg === "sea") {
+    return (
+      <>
+        <div style={{ position: "absolute", right: "8%", top: "10%", width: 40, height: 40, borderRadius: "50%", background: "#ffcf5a", boxShadow: "0 0 26px #ffcf5a" }} />
+        <svg style={{ position: "absolute", left: 0, right: 0, bottom: "18%", width: "100%" }} height="34" viewBox="0 0 400 34" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 20 Q25 6 50 20 T100 20 T150 20 T200 20 T250 20 T300 20 T350 20 T400 20 V34 H0 Z" fill="#5aa9e0" />
+        </svg>
+        <svg style={{ position: "absolute", right: "3%", bottom: "24%" }} width="90" height="60" viewBox="0 0 90 60" aria-hidden="true">
+          <path d="M0 60 L10 30 L20 40 L34 10 L48 34 L60 18 L74 38 L90 60 Z" fill="#a0522d" opacity=".55" />
+          <rect x="30" y="18" width="10" height="14" fill="#f2c230" opacity=".7" />
+        </svg>
+      </>
+    );
+  }
+  if (bg === "lanka") {
+    return (
+      <svg style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "20%" }} width="230" height="130" viewBox="0 0 230 130" aria-hidden="true">
+        {[20, 70, 120, 170].map((x, k) => (
+          <g key={x}>
+            <rect x={x} y={k % 2 ? 40 : 20} width="40" height={k % 2 ? 90 : 110} fill="#e0a526" stroke="#a87410" strokeWidth="2" />
+            <path d={`M${x - 4} ${k % 2 ? 40 : 20} L${x + 20} ${k % 2 ? 14 : -6} L${x + 44} ${k % 2 ? 40 : 20} Z`} fill="#c0392b" />
+            <rect x={x + 14} y={k % 2 ? 70 : 54} width="12" height="16" rx="6" fill="#7b1f3a" />
+          </g>
+        ))}
+      </svg>
+    );
+  }
+  if (bg === "camp") {
+    return (
+      <>
+        {[10, 80].map((x) => (
+          <svg key={x} style={{ position: "absolute", left: `${x}%`, bottom: "20%", transform: "translateX(-50%)" }} width="70" height="58" viewBox="0 0 70 58" aria-hidden="true">
+            <path d="M35 2 L68 56 H2 Z" fill="#f28c28" stroke="#c96a10" strokeWidth="2" />
+            <path d="M35 22 L46 56 H24 Z" fill="#8a3f15" />
+          </svg>
+        ))}
+        <div style={{ position: "absolute", left: "48%", top: "6%", width: 6, height: 50, background: "#8a3f15" }} />
+        <div className="sway" style={{ position: "absolute", left: "calc(48% + 6px)", top: "6%", width: 40, height: 26, background: "#f28c28", clipPath: "polygon(0 0, 100% 50%, 0 100%)" }} />
       </>
     );
   }
@@ -81,7 +125,7 @@ export function SceneView({ scene, height = "var(--scene-h)" }: { scene: SceneSp
         </div></div>
       )}
       {items && items.on !== "web" && (
-        <div style={{ position: "absolute", left: solo ? (cast.includes("ganesha") ? "66%" : "36%") : "50%", bottom: "12%", transform: "translateX(-50%)", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 2, width: cast.length > 1 ? "32%" : "46%", padding: "6px 8px", background: items.on === "plate" ? "rgba(255,255,255,.85)" : "transparent", borderRadius: 999 }}>
+        <div style={{ position: "absolute", left: solo ? (cast.includes("mooshak") ? "36%" : "66%") : "50%", bottom: "12%", transform: "translateX(-50%)", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 2, width: cast.length > 1 ? "32%" : "46%", padding: "6px 8px", background: items.on === "plate" ? "rgba(255,255,255,.85)" : "transparent", borderRadius: 999 }}>
           {Array.from({ length: items.n }, (_, k) => <div key={k} className="pop" style={{ animationDelay: `${k * 0.08}s`, animationFillMode: "both" }}><ItemArt item={items.item} size={28} /></div>)}
         </div>
       )}
@@ -91,6 +135,13 @@ export function SceneView({ scene, height = "var(--scene-h)" }: { scene: SceneSp
       {scene.kaalu && (
         <div className="kaalu-fly" style={{ position: "absolute", right: "6%", top: "8%", zIndex: 3 }}>
           <KaaluArt size={78} />
+        </div>
+      )}
+      {(cast.includes("ram") || cast.includes("hanuman") || cast.includes("ravan")) && (
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: "3%", display: "flex", justifyContent: cast.length === 1 ? (items ? "flex-start" : "center") : "space-between", alignItems: "flex-end", padding: "0 3%", pointerEvents: "none" }}>
+          {cast.includes("ram") && <div className="bob"><RamArt size={cast.length > 2 ? 92 : 112} /></div>}
+          {cast.includes("hanuman") && <div className="hop"><HanumanArt size={cast.length > 2 ? 92 : 108} /></div>}
+          {cast.includes("ravan") && <div className="bob"><RavanArt size={cast.length > 1 ? 140 : 180} /></div>}
         </div>
       )}
       {cast.includes("ganesha") && (

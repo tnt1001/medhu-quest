@@ -106,11 +106,15 @@ export function Scattered({ n, item, seed, size = 52 }: { n: number; item: Item;
   );
 }
 
+// The progress bar shows the current arc's treat (modaks in Arc 1, arrows in Arc 2).
+let progressItem: Item = "modak";
+export function setProgressItem(item: Item) { progressItem = item; }
+
 export function Progress({ total, at }: { total: number; at: number }) {
   return (
     <div className="modakbar" aria-label={`${at} of ${total}`}>
       {Array.from({ length: total }, (_, i) => (
-        <span key={i} className={i < at ? "on" : ""}><ItemArt item="modak" size={22} /></span>
+        <span key={i} className={i < at ? "on" : ""}><ItemArt item={progressItem} size={22} /></span>
       ))}
     </div>
   );

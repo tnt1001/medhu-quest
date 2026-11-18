@@ -1,27 +1,34 @@
-export type Item = "modak" | "diya" | "star" | "laddoo";
+export type Item = "modak" | "diya" | "star" | "laddoo" | "vanara" | "stone" | "arrow";
 export type ShapeName = "circle" | "triangle" | "square" | "rectangle";
 
 export type Game =
   | { type: "count"; item: Item; rounds: number[] }
-  | { type: "flash"; item: Item; layout: "scatter" | "dice" | "frame5"; rounds: number[] }
+  | { type: "flash"; item: Item; layout: Layout; rounds: number[] }
   | { type: "giveN"; item: Item; rounds: number[] }
   | { type: "conserve"; item: Item; rounds: number[] }
   | { type: "compare"; item: Item; rounds: [number, number][]; ask?: "more" | "less" }
-  | { type: "pick"; item: Item; layout: "scatter" | "dice" | "frame5"; rounds: number[] }
+  | { type: "pick"; item: Item; layout: Layout; rounds: number[] }
   | { type: "balloons"; mode: "count" | "give"; rounds: number[] }
   | { type: "feed"; rounds: number[] }
   | { type: "memory"; rounds: number[][] }
   | { type: "pattern"; rounds: string[][] }
   | { type: "shapes"; rounds: ShapeName[] }
   | { type: "mixed"; parts: Game[] }
-  | { type: "check"; items: number[] };
+  | { type: "check"; items: number[] }
+  | { type: "hop"; mode: "guess" | "tap"; rounds: [number, number][] }
+  | { type: "shield"; item: Item; rounds: [number, number][] }
+  | { type: "army"; item: Item; op: "add" | "take"; rounds: [number, number][] }
+  | { type: "cards"; rounds: [number, number][] }
+  | { type: "size"; rounds: number[] };
 
-export type Bg = "feast" | "temple" | "night" | "kitchen" | "sky";
+export type Layout = "scatter" | "dice" | "frame5" | "frame10";
+
+export type Bg = "feast" | "temple" | "night" | "kitchen" | "sky" | "sea" | "lanka" | "camp";
 export type Mood = "happy" | "confused" | "excited" | "thinking";
 
 export interface Scene {
   bg: Bg;
-  cast?: ("ganesha" | "mooshak")[];
+  cast?: ("ganesha" | "mooshak" | "ram" | "ravan" | "hanuman")[];
   kaalu?: boolean;
   mood?: Mood;
   web?: boolean;
@@ -43,7 +50,11 @@ export type Demo =
   | { type: "pattern"; seq: string[] }
   | { type: "shape"; shape: ShapeName }
   | { type: "number"; n: number }
-  | { type: "scene"; scene: Scene };
+  | { type: "scene"; scene: Scene }
+  | { type: "frame10"; n: number }
+  | { type: "hop"; from: number; by: number }
+  | { type: "hide"; item: Item; total: number; shown: number }
+  | { type: "army"; item: Item; op: "add" | "take"; a: number; b: number };
 
 export interface LearnStep { t: string; demo: Demo }
 
@@ -88,12 +99,15 @@ export const CARDS = [
   { name: "Durga", world: "Mythology", color: "#c2185b" },
   { name: "Krishna", world: "Mythology", color: "#283593" },
   { name: "Shiva", world: "Mythology", color: "#455a64" },
-  { name: "Ram", world: "Mythology", color: "#00838f" },
+  { name: "Ram", world: "Mythology", color: "#3b6fc4" },
 ];
 
 export const STARS_PER_CARD = 10;
 
 const F = (o: Partial<Scene> = {}): Scene => ({ bg: "feast", ...o });
+const L = (o: Partial<Scene> = {}): Scene => ({ bg: "lanka", ...o });
+const S = (o: Partial<Scene> = {}): Scene => ({ bg: "sea", ...o });
+const C = (o: Partial<Scene> = {}): Scene => ({ bg: "camp", ...o });
 
 export const QUESTS: Quest[] = [
   {
@@ -365,8 +379,295 @@ export const QUESTS: Quest[] = [
     physical: { title: "Helper Test again", steps: ["Run the 12-item Medhu Maths Check today or tomorrow.", "Enter scores in Admin > Checks, label \"Day 14\"."] },
     mistake: { item: "modak", shown: 7, claim: 6 },
     easyWin: { item: "modak", n: 5 },
-    teaser: "[excited] You beat Kaalu! Next arc: Lord Hanuman's big leap!",
+    teaser: "[excited] You beat Kaalu! Next arc: Lord Ram vs Ravan!",
   },
+  // ===================== ARC 2: Ram vs Ravan, the Battle of Lanka =====================
+  {
+    day: 13, title: "Ravan's trick", costars: ["Ram", "Hanuman"], skill: "R3", review: ["C2", "S2"],
+    power: { name: "One More Power", desc: "One more is the NEXT number." },
+    story: [
+      { t: "[dramatic] Uh oh! Ten-headed Ravan grabbed Sita and flew away to Lanka!", s: L({ cast: ["ravan"] }) },
+      { t: "[determined] Lord Ram says, \"I will bring Sita home!\" But he needs an army.", s: C({ cast: ["ram"] }) },
+      { t: "[excited] Monkeys come to help, one more, and one more, and one more! Let's count them!", s: C({ cast: ["hanuman"], items: { item: "vanara", n: 4, on: "floor" } }) },
+    ],
+    learn: [
+      { t: "[warmly] Lord Hanuman stands on stone four. One jump more... he lands on five!", demo: { type: "hop", from: 4, by: 1 } },
+      { t: "[excited] One more is always the NEXT number. After seven comes... eight!", demo: { type: "hop", from: 7, by: 1 } },
+    ],
+    talk: "Hold up 5 fingers. Add one more finger. \"How many now?\" Try 7 and 9 too.",
+    gameName: "Stone Hop",
+    game: { type: "mixed", parts: [
+      { type: "hop", mode: "guess", rounds: [[3, 1], [5, 1]] },
+      { type: "army", item: "vanara", op: "add", rounds: [[4, 1], [6, 1]] },
+      { type: "hop", mode: "guess", rounds: [[8, 1], [11, 1], [14, 1]] },
+    ] },
+    physical: { title: "One more", steps: ["Make a row of 6 spoons.", "Add one more. \"How many now?\"", "Ask him not to count from one!"] },
+    mistake: { item: "vanara", shown: 6, claim: 5 },
+    easyWin: { item: "vanara", n: 3 },
+    teaser: "[mischievously] Next: one step BACK!",
+  },
+  {
+    day: 14, title: "One step back", costars: ["Hanuman"], skill: "R3", review: ["R3", "C3"],
+    power: { name: "One Less Power", desc: "One less is the number BEFORE." },
+    story: [
+      { t: "[curious] Lord Hanuman tiptoes to the sea to look for Lanka.", s: S({ cast: ["hanuman"] }) },
+      { t: "[gasps] Oops! A big wave! He must jump BACK, one stone at a time!", s: S({ cast: ["hanuman"], items: { item: "stone", n: 5, on: "floor" } }) },
+      { t: "[excited] Help him jump back to the right stone!", s: S({ cast: ["hanuman"], big: "← 1" }) },
+    ],
+    learn: [
+      { t: "[warmly] Lord Hanuman is on six. One jump back... five! One less than six is five.", demo: { type: "hop", from: 6, by: -1 } },
+      { t: "[excited] One less is the number BEFORE. Before ten comes... nine!", demo: { type: "hop", from: 10, by: -1 } },
+    ],
+    talk: "Count down together from 10 to 1 like a rocket, then ask \"One less than 6?\"",
+    gameName: "Jump Back",
+    game: { type: "mixed", parts: [
+      { type: "hop", mode: "guess", rounds: [[4, -1], [6, -1]] },
+      { type: "army", item: "stone", op: "take", rounds: [[5, 1], [7, 1]] },
+      { type: "hop", mode: "guess", rounds: [[3, 1], [10, -1], [13, -1], [16, 1]] },
+    ] },
+    physical: { title: "Stair hop", steps: ["Stand on a stair and say its number.", "Step down one. \"What number now?\"", "Mix: one up, one down."] },
+    mistake: { item: "stone", shown: 4, claim: 5 },
+    easyWin: { item: "stone", n: 2 },
+    teaser: "[mischievously] Next: the golden shield!",
+  },
+  {
+    day: 15, title: "The golden shield", costars: ["Hanuman"], skill: "P2", review: ["R3", "P1"],
+    power: { name: "Hiding Power", desc: "You know how many are hiding." },
+    story: [
+      { t: "[whispers] Lord Hanuman sneaks into Lanka with five monkey friends.", s: L({ cast: ["hanuman"], items: { item: "vanara", n: 5, on: "floor" } }) },
+      { t: "[gasps] Ravan's guards are coming! Some monkeys hide behind the golden shield.", s: L({ cast: ["hanuman", "ravan"] }) },
+      { t: "[curious] Can you work out how many are hiding?", s: L({ cast: ["hanuman"], big: "?" }) },
+    ],
+    learn: [
+      { t: "[warmly] Five monkeys. Three are outside. Count on from three: four, five. Two are hiding!", demo: { type: "hide", item: "vanara", total: 5, shown: 3 } },
+      { t: "[excited] Five monkeys. Four are outside. So one is hiding!", demo: { type: "hide", item: "vanara", total: 5, shown: 4 } },
+    ],
+    talk: "Hide some of 5 coins under your hand. \"How many are hiding?\"",
+    gameName: "How Many Hiding",
+    game: { type: "mixed", parts: [
+      { type: "shield", item: "vanara", rounds: [[4, 3], [5, 4]] },
+      { type: "flash", item: "vanara", layout: "frame5", rounds: [3, 4] },
+      { type: "shield", item: "vanara", rounds: [[5, 3], [5, 2], [5, 1]] },
+    ] },
+    physical: { title: "Cup hide", steps: ["Put 5 small things under a cup.", "Take some out. Show them.", "\"How many are still hiding?\" Lift to check."] },
+    mistake: { item: "vanara", shown: 5, claim: 4 },
+    easyWin: { item: "vanara", n: 3 },
+    teaser: "[mischievously] Next: build a bridge across the sea!",
+  },
+  {
+    day: 16, title: "Build the bridge", costars: ["Ram", "Hanuman"], skill: "O1", review: ["P2", "R3"],
+    power: { name: "Adding Power", desc: "Some, and some more, make how many?" },
+    story: [
+      { t: "[curious] Lanka is far across the sea. How will the army get there?", s: S({ cast: ["ram"] }) },
+      { t: "[excited] Build a bridge! The monkeys write \"Ram\" on stones, and the stones FLOAT!", s: S({ cast: ["hanuman"], items: { item: "stone", n: 3, on: "floor" } }) },
+      { t: "[cheerfully] Three stones, and two more come... How many now? Let's build!", s: S({ cast: ["ram", "hanuman"], big: "3 + 2" }) },
+    ],
+    learn: [
+      { t: "[warmly] Three stones. Two more come. Start at three and count on: four, five!", demo: { type: "army", item: "stone", op: "add", a: 3, b: 2 } },
+      { t: "[excited] Two monkeys, and two more. Two and two make four!", demo: { type: "army", item: "vanara", op: "add", a: 2, b: 2 } },
+    ],
+    talk: "Tell a story: \"3 cars, 1 more comes.\" Act it out with toys.",
+    gameName: "Ram Setu",
+    game: { type: "mixed", parts: [
+      { type: "army", item: "stone", op: "add", rounds: [[2, 1], [3, 1]] },
+      { type: "giveN", item: "stone", rounds: [4, 5] },
+      { type: "army", item: "stone", op: "add", rounds: [[3, 2], [2, 3], [4, 1]] },
+    ] },
+    physical: { title: "Bridge of blocks", steps: ["Lay 3 blocks in a line.", "Add 2 more. \"How many now?\"", "Try 1+3, 2+2, 4+1."] },
+    mistake: { item: "stone", shown: 5, claim: 4 },
+    easyWin: { item: "stone", n: 3 },
+    teaser: "[mischievously] Next: Lord Hanuman grows GIANT!",
+  },
+  {
+    day: 17, title: "Hanuman grows!", costars: ["Hanuman"], skill: "M3", review: ["O1", "P2"],
+    power: { name: "Size Power", desc: "You put things from small to big." },
+    story: [
+      { t: "[whispers] Lord Hanuman can make himself tiny, tiny, tiny...", s: C({ cast: ["hanuman"] }) },
+      { t: "[dramatic] ...or BIG, BIGGER, GIANT! As tall as a mountain!", s: S({ cast: ["hanuman"], big: "BIG!" }) },
+      { t: "[excited] Help him grow, from smallest to biggest!", s: C({ cast: ["hanuman"], mood: "excited" }) },
+    ],
+    learn: [
+      { t: "[warmly] Look for the tiniest one first. Then the middle one. Then the biggest!", demo: { type: "scene", scene: { bg: "camp", cast: ["hanuman"], big: "small → BIG" } } },
+    ],
+    talk: "Line up 3 cups or shoes from smallest to biggest together.",
+    gameName: "Grow Hanuman",
+    game: { type: "mixed", parts: [
+      { type: "size", rounds: [3, 3] },
+      { type: "compare", item: "vanara", rounds: [[3, 5], [7, 6]] },
+      { type: "size", rounds: [4, 4] },
+    ] },
+    physical: { title: "Line them up", steps: ["Find 4 things of different sizes.", "Line them smallest to biggest.", "\"Which is the biggest?\""] },
+    easyWin: { item: "vanara", n: 2 },
+    teaser: "[mischievously] Next: Ravan's fire arrows!",
+  },
+  {
+    day: 18, title: "Fire arrows", costars: ["Ram"], skill: "O2", review: ["O1", "R3"],
+    power: { name: "Take Away Power", desc: "Some go away. How many are left?" },
+    story: [
+      { t: "[dramatic] The battle begins! Ravan shoots fire arrows across the sky!", s: L({ cast: ["ravan"], big: "🔥" }) },
+      { t: "[determined] Lord Ram lifts his golden bow. Whoosh! His arrows knock them away!", s: C({ cast: ["ram"] }) },
+      { t: "[curious] Five arrows, two knocked away. How many are left?", s: L({ cast: ["ram", "ravan"], big: "5 − 2" }) },
+    ],
+    learn: [
+      { t: "[warmly] Five arrows. Two go away. Count the ones still here: one, two, three. Three are left!", demo: { type: "army", item: "arrow", op: "take", a: 5, b: 2 } },
+      { t: "[excited] Four arrows. One goes away. One less than four is three!", demo: { type: "army", item: "arrow", op: "take", a: 4, b: 1 } },
+    ],
+    talk: "Put 5 grapes out. Eat 2. \"How many are left?\"",
+    gameName: "Knock Them Away",
+    game: { type: "mixed", parts: [
+      { type: "army", item: "arrow", op: "take", rounds: [[4, 1], [5, 1]] },
+      { type: "hop", mode: "guess", rounds: [[6, -1], [9, -1]] },
+      { type: "army", item: "arrow", op: "take", rounds: [[5, 2], [5, 3], [4, 2]] },
+    ] },
+    physical: { title: "Snack take-away", steps: ["Put 5 snacks on a plate.", "Eat some. \"How many are left?\"", "Count to check."] },
+    mistake: { item: "arrow", shown: 3, claim: 2 },
+    easyWin: { item: "arrow", n: 3 },
+    teaser: "[mischievously] Next: the magic quiver!",
+  },
+  {
+    day: 19, title: "The magic quiver", costars: ["Ram"], skill: "S4", review: ["O2", "P1"],
+    power: { name: "Five and More", desc: "You see 6 to 10 as 5 and some more." },
+    story: [
+      { t: "[excited] Lord Ram has a magic quiver. It holds TEN arrows, in two rows of five!", s: C({ cast: ["ram"], items: { item: "arrow", n: 10, on: "floor" } }) },
+      { t: "[curious] In a fast battle, there's no time to count every arrow!", s: L({ cast: ["ram", "ravan"] }) },
+      { t: "[whispers] Secret trick: a full row is five. Then count the rest!", s: C({ cast: ["ram"], big: "5 + ?" }) },
+    ],
+    learn: [
+      { t: "[warmly] The top row is full. That's five! Then one more... six!", demo: { type: "frame10", n: 6 } },
+      { t: "[excited] Five and three more... eight! No need to count them all.", demo: { type: "frame10", n: 8 } },
+    ],
+    talk: "Show 5 fingers on one hand and 2 on the other. \"5 and 2 is...?\"",
+    gameName: "Quiver Flash",
+    game: { type: "mixed", parts: [
+      { type: "flash", item: "arrow", layout: "frame10", rounds: [6, 5] },
+      { type: "pick", item: "arrow", layout: "frame10", rounds: [7, 6] },
+      { type: "flash", item: "arrow", layout: "frame10", rounds: [8, 7, 9] },
+    ] },
+    physical: { title: "Egg-box tens", steps: ["Use an egg box or draw 2 rows of 5.", "Fill 7 spots with coins.", "\"5 and how many more?\""] },
+    mistake: { item: "arrow", shown: 7, claim: 6 },
+    easyWin: { item: "arrow", n: 5 },
+    teaser: "[mischievously] Next: battle cards!",
+  },
+  {
+    day: 20, title: "Battle cards", costars: ["Ram"], skill: "R4", review: ["S4", "R2"],
+    power: { name: "Bigger Number Power", desc: "The number that comes later is bigger." },
+    story: [
+      { t: "[dramatic] Ravan says, \"My army is BIGGER!\" Lord Ram says, \"Let's check!\"", s: L({ cast: ["ram", "ravan"] }) },
+      { t: "[curious] Each army holds up a number card. The bigger number wins!", s: C({ cast: ["ram"], big: "12  15" }) },
+      { t: "[excited] You are the judge, Medhu! Which number is bigger?", s: L({ cast: ["ravan"], big: "?" }) },
+    ],
+    learn: [
+      { t: "[warmly] Count up: twelve, thirteen, fourteen, fifteen. Fifteen comes later, so it's bigger!", demo: { type: "hop", from: 12, by: 3 } },
+      { t: "[excited] Nine or six? Nine comes after six. Nine is bigger!", demo: { type: "number", n: 9 } },
+    ],
+    talk: "Write two numbers (like 8 and 13). Ask which is bigger, and why.",
+    gameName: "Battle Cards",
+    game: { type: "mixed", parts: [
+      { type: "cards", rounds: [[3, 5], [8, 6]] },
+      { type: "compare", item: "vanara", ask: "less", rounds: [[6, 8]] },
+      { type: "cards", rounds: [[12, 9], [14, 17], [19, 11], [15, 16]] },
+    ] },
+    physical: { title: "Card war", steps: ["Use playing cards 1-10 (or write 1-20).", "Each takes a card. Bigger number wins!", "Say \"__ is bigger than __\"."] },
+    easyWin: { item: "vanara", n: 4 },
+    teaser: "[mischievously] Next: Lord Hanuman's big hop!",
+  },
+  {
+    day: 21, title: "Hanuman's big hop", costars: ["Hanuman"], skill: "C5", review: ["R4", "O1"],
+    power: { name: "Count On Power", desc: "Start from any number and keep counting." },
+    story: [
+      { t: "[excited] Lord Hanuman must carry a message across the battlefield, FAST!", s: L({ cast: ["hanuman"] }) },
+      { t: "[curious] He doesn't start from stone one. He starts right where he is!", s: S({ cast: ["hanuman"], items: { item: "stone", n: 4, on: "floor" } }) },
+      { t: "[cheerfully] Start at the number, and hop and count on. Let's go!", s: S({ cast: ["hanuman"], big: "7 → 8, 9, 10" }) },
+    ],
+    learn: [
+      { t: "[warmly] Start at seven. Hop three more: eight, nine, ten. Seven and three more is ten!", demo: { type: "hop", from: 7, by: 3 } },
+      { t: "[excited] Start at five. Hop two more: six, seven!", demo: { type: "hop", from: 5, by: 2 } },
+    ],
+    talk: "\"Start at 8, count 3 more\" - clap as he counts 9, 10, 11.",
+    gameName: "Big Hop",
+    game: { type: "mixed", parts: [
+      { type: "hop", mode: "tap", rounds: [[3, 2], [5, 2]] },
+      { type: "army", item: "vanara", op: "add", rounds: [[5, 2]] },
+      { type: "hop", mode: "tap", rounds: [[7, 3], [10, 3], [13, 4]] },
+    ] },
+    physical: { title: "Hop and count", steps: ["Say \"You're on 6!\"", "He jumps 3 times, counting 7, 8, 9.", "Try starting at 10, 12, 15."] },
+    mistake: { item: "vanara", shown: 8, claim: 7 },
+    easyWin: { item: "vanara", n: 4 },
+    teaser: "[mischievously] Next: the armies grow and shrink!",
+  },
+  {
+    day: 22, title: "Army count", costars: ["Ram", "Hanuman"], skill: "O3", review: ["C5", "O2"],
+    power: { name: "Army Maths", desc: "You add and take away up to 10." },
+    story: [
+      { t: "[dramatic] The battle is BIG now! More monkeys run in. Ravan's guards run away!", s: L({ cast: ["hanuman", "ravan"] }) },
+      { t: "[curious] Lord Ram must always know: how many in the army now?", s: C({ cast: ["ram"], items: { item: "vanara", n: 6, on: "floor" } }) },
+      { t: "[excited] Some come, some go. Keep the count, Medhu!", s: C({ cast: ["ram", "hanuman"], big: "+ −" }) },
+    ],
+    learn: [
+      { t: "[warmly] Six monkeys. Three more come. Count on: seven, eight, nine!", demo: { type: "army", item: "vanara", op: "add", a: 6, b: 3 } },
+      { t: "[excited] Eight arrows. Three go away. Count back: seven, six, five!", demo: { type: "army", item: "arrow", op: "take", a: 8, b: 3 } },
+    ],
+    talk: "Use toys: \"7 cars, 2 drive away. How many?\" then \"4 cars, 3 more come.\"",
+    gameName: "Army Maths",
+    game: { type: "mixed", parts: [
+      { type: "army", item: "vanara", op: "add", rounds: [[5, 2], [6, 3]] },
+      { type: "army", item: "arrow", op: "take", rounds: [[7, 2], [8, 3]] },
+      { type: "army", item: "vanara", op: "add", rounds: [[7, 3]] },
+      { type: "army", item: "arrow", op: "take", rounds: [[10, 4]] },
+    ] },
+    physical: { title: "Toy army", steps: ["Line up 6 toys.", "Add or take away some.", "\"How many now?\" Count to check."] },
+    mistake: { item: "vanara", shown: 9, claim: 8 },
+    easyWin: { item: "vanara", n: 5 },
+    teaser: "[mischievously] Next: Ravan's ten crowns!",
+  },
+  {
+    day: 23, title: "Ten crowns", costars: ["Ram"], skill: "P4", review: ["O3", "S4"],
+    power: { name: "Make Ten", desc: "You know the parts that make 10." },
+    story: [
+      { t: "[dramatic] Ravan has TEN heads and ten golden crowns! He thinks he can't lose.", s: L({ cast: ["ravan"], big: "10" }) },
+      { t: "[determined] Lord Ram fires ten arrows. Some fly behind the golden shield!", s: C({ cast: ["ram"], items: { item: "arrow", n: 10, on: "floor" } }) },
+      { t: "[curious] Ten in all. How many are hiding? Let's find out!", s: L({ cast: ["ram", "ravan"], big: "? + ? = 10" }) },
+    ],
+    learn: [
+      { t: "[warmly] Ten arrows. Seven are outside. Count on to ten: eight, nine, ten. Three are hiding!", demo: { type: "hide", item: "arrow", total: 10, shown: 7 } },
+      { t: "[excited] Look at the quiver! Eight arrows, and two empty spots. Eight and two make ten!", demo: { type: "frame10", n: 8 } },
+    ],
+    talk: "Show 10 fingers. Fold some down. \"How many are folded?\"",
+    gameName: "Make Ten",
+    game: { type: "mixed", parts: [
+      { type: "shield", item: "arrow", rounds: [[10, 9], [10, 8]] },
+      { type: "pick", item: "arrow", layout: "frame10", rounds: [9, 8] },
+      { type: "shield", item: "arrow", rounds: [[10, 7], [10, 5], [10, 6]] },
+    ] },
+    physical: { title: "Ten fingers", steps: ["Hold up 10 fingers together.", "Fold 3 down. \"How many still up?\"", "Try 1, 4, 5, 6 folded."] },
+    mistake: { item: "arrow", shown: 10, claim: 9 },
+    easyWin: { item: "arrow", n: 5 },
+    teaser: "[excited] Next: THE BATTLE OF LANKA!",
+  },
+  {
+    day: 24, title: "Battle of Lanka", costars: ["Ram", "Hanuman"], skill: "O3", review: ["R3", "P2", "O1", "O2", "R4"],
+    power: { name: "Ram's Golden Bow", desc: "You finished the Battle of Lanka!" },
+    story: [
+      { t: "[dramatic] The final battle! Lord Ram faces mighty Ravan!", s: L({ cast: ["ram", "ravan"] }) },
+      { t: "[excited] Lord Hanuman and the monkey army cheer, \"Jai Shri Ram!\"", s: C({ cast: ["hanuman"], items: { item: "vanara", n: 6, on: "floor" } }) },
+      { t: "[determined] Use ALL your powers, Medhu! Help Lord Ram win and bring Sita home!", s: L({ cast: ["ram", "hanuman", "ravan"], big: "★★★" }) },
+    ],
+    learn: [],
+    gameName: "Final Battle",
+    game: { type: "mixed", parts: [
+      { type: "hop", mode: "guess", rounds: [[12, 1], [9, -1]] },
+      { type: "shield", item: "vanara", rounds: [[5, 2]] },
+      { type: "army", item: "arrow", op: "add", rounds: [[6, 3]] },
+      { type: "cards", rounds: [[16, 13]] },
+      { type: "army", item: "arrow", op: "take", rounds: [[9, 4]] },
+      { type: "flash", item: "arrow", layout: "frame10", rounds: [8] },
+    ] },
+    physical: { title: "Helper Test again", steps: ["Run the 12-item Medhu Maths Check today or tomorrow.", "Enter scores in Admin > Checks, label \"Day 28\"."] },
+    mistake: { item: "vanara", shown: 8, claim: 9 },
+    easyWin: { item: "vanara", n: 5 },
+    teaser: "[excited] Lord Ram wins! Sita comes home, and everyone lights diyas. Happy Diwali!",
+  },
+
 ];
 
 export function questByDay(day: number) {

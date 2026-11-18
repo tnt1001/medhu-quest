@@ -32,6 +32,7 @@ export const P = {
   foundAll: "[excited] You found them all!",
   shakeWeb: "[dramatic] Whoooosh! The wind blows! [curious] How many modaks now?",
   mooshakClaim: (n: number) => `[proudly] I count ${n} modaks!`,
+  mooshakClaimG: (n: number) => `[proudly] I count ${n}!`,
   mooshakHmm: "[curious] Hmm, are you sure? Count again!",
   mooshakThanks: "[laughs] Thank you, Medhu! You fixed my mistake!",
   easyOne: "[cheerfully] Last one!",
@@ -39,6 +40,25 @@ export const P = {
   phoneDown: "[excited] Phone down! Play with Papa now.",
   learnIntro: "[whispers] Let's learn the secret trick!",
   newPower: (name: string) => `[excited] You did it! New power: ${name}!`,
+  // Arc 2
+  howMany: "[curious] So... how many?",
+  sendN: (n: number) => `[cheerfully] Lord Ram needs ${n}. Send exactly ${n}!`,
+  oneMoreQ: "[curious] One jump more. Where will Lord Hanuman land?",
+  oneLessQ: "[curious] One jump back. Where will he land?",
+  hopN: (n: number) => `[cheerfully] Hop ${n} more! Count as you hop.`,
+  thereAre: (n: number, item: string) => `[cheerfully] There are ${n} ${NOUNS[item]?.[n === 1 ? 0 : 1] ?? item}.`,
+  howManyHiding: "[curious] Some hide behind the shield! How many are hiding?",
+  moreCome: "[excited] More are coming! How many now?",
+  someGo: "[gasps] Some go away! How many are left?",
+  biggerWins: "[dramatic] The bigger number wins the battle! Tap the bigger one.",
+  smallToBig: "[cheerfully] Tap from smallest to biggest!",
+  whichMoreG: "[curious] Which group has more?",
+  whichLessG: "[curious] Which group has less?",
+};
+
+const NOUNS: Record<string, [string, string]> = {
+  modak: ["modak", "modaks"], diya: ["diya", "diyas"], star: ["star", "stars"], laddoo: ["laddoo", "laddoos"],
+  vanara: ["monkey", "monkeys"], stone: ["stone", "stones"], arrow: ["arrow", "arrows"],
 };
 
 const COLORS = ["red", "blue", "yellow", "green"];
@@ -59,7 +79,11 @@ export function allPhrases(): { text: string; voice: Voice }[] {
   SHAPES.forEach((s) => add(P.findShapes(s)));
   [P.popCount, P.howManyPopped, P.tooFull, P.stillHungry, P.yum, P.memoryStart, P.whichLess, P.tooMany, P.notEnough, P.tapToCount, P.howManyModaks, P.howManySaw, P.whichMore, P.countAgain, P.whatNext, P.foundAll, P.shakeWeb, P.easyOne, P.questDone, P.phoneDown].forEach((t) => add(t));
   add(P.learnIntro);
+  for (let n = 1; n <= 10; n++) { add(P.sendN(n)); for (const it of Object.keys(NOUNS)) add(P.thereAre(n, it)); }
+  for (let n = 1; n <= 5; n++) add(P.hopN(n));
+  [P.howMany, P.oneMoreQ, P.oneLessQ, P.howManyHiding, P.moreCome, P.someGo, P.biggerWins, P.smallToBig, P.whichMoreG, P.whichLessG].forEach((t) => add(t));
   for (const q of QUESTS) add(P.newPower(q.power.name));
+  for (let n = 1; n <= 12; n++) add(P.mooshakClaimG(n), "mooshak");
   add(P.mooshakHmm, "mooshak");
   add(P.mooshakThanks, "mooshak");
   return out;
